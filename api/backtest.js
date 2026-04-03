@@ -39,7 +39,7 @@ module.exports = async function handler(req, res) {
 
     if (!history || history.length < 10) {
       return res.status(404).json({
-        error: `找不到 "${ticker}" 的歷史資料。台股請加 .TW（如 0050.TW），美股直接輸入代號（如 SPY）。`,
+        error: `找不到 "${ticker}" 的歷史資料。台股請加 .TW（如 0050.TW），美股直接輸入代號（如 VOO）。`,
       });
     }
 
@@ -55,13 +55,19 @@ module.exports = async function handler(req, res) {
     const luckyBuys = buildYearlyBuys(byYear, yearly, 'low');
     const unluckyBuys = buildYearlyBuys(byYear, yearly, 'high');
 
+    const totalAmount = monthly * Object.keys(byYearMonth).length;
+    const firstRow = history[0];
+    const firstPrice = getPrice(firstRow);
+    const lumpsumBuys = [{ date: firstRow.date, price: firstPrice, shares: totalAmount / firstPrice, amount: totalAmount }];
+
     const strategies = {
+      lumpsum: computeStrategy(lumpsumBuys, lastPrice, lastDate, '單筆投入（第一天 All-in）'),
       dca: computeStrategy(dcaBuys, lastPrice, lastDate, '不擇時每月定額 DCA'),
       lucky: computeStrategy(luckyBuys, lastPrice, lastDate, '天選之人（年度最低點）'),
       unlucky: computeStrategy(unluckyBuys, lastPrice, lastDate, '地獄倒霉鬼（年度最高點）'),
     };
 
-    const chartData = buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth);
+    const chartData = buildChartData(dcaBuys, luckyBuys, unluckyBuys, lumpsumBuys, byYearMonth);
 
     const sampled =
       chartData.length > 120

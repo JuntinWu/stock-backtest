@@ -23,10 +23,11 @@ function formatY(value: number): string {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   const rows = [
-    { key: 'lucky',   label: '🍀 天選之人',     color: 'var(--green)' },
+    { key: 'lumpsum', label: '💰 單筆 All-in',   color: 'var(--amber)' },
+    { key: 'lucky',   label: '🍀 天選之人',       color: 'var(--green)' },
     { key: 'dca',     label: '📅 不擇時進場 DCA', color: 'var(--blue)' },
-    { key: 'unlucky', label: '😱 地獄倒霉鬼',   color: 'var(--red)' },
-    { key: 'invested', label: '💰 投入本金',    color: 'var(--text-muted)' },
+    { key: 'unlucky', label: '😱 地獄倒霉鬼',     color: 'var(--red)' },
+    { key: 'invested', label: '📊 投入本金',      color: 'var(--text-muted)' },
   ]
 
   const dataMap: Record<string, number> = {}
@@ -62,6 +63,10 @@ export default function ResultChart({ data, ticker }: Props) {
           <div className="chart-subtitle">使用調整後收盤價（含配息股息再投入）</div>
         </div>
         <div className="legend">
+          <div className="legend-item">
+            <div className="legend-dot" style={{ background: 'var(--amber)' }} />
+            單筆 All-in
+          </div>
           <div className="legend-item">
             <div className="legend-dot" style={{ background: 'var(--green)' }} />
             天選之人
@@ -114,6 +119,16 @@ export default function ResultChart({ data, ticker }: Props) {
             strokeDasharray="4 4"
             dot={false}
             activeDot={false}
+          />
+
+          {/* Lumpsum */}
+          <Line
+            type="monotone"
+            dataKey="lumpsum"
+            stroke="var(--amber)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, fill: 'var(--amber)', strokeWidth: 0 }}
           />
 
           {/* Unlucky */}

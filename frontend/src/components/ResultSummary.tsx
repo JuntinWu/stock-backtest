@@ -15,7 +15,7 @@ function fmtPct(n: number) {
 }
 
 interface CardProps {
-  variant: 'lucky' | 'dca' | 'unlucky'
+  variant: 'lumpsum' | 'lucky' | 'dca' | 'unlucky'
   emoji: string
   tag: string
   label: string
@@ -81,6 +81,7 @@ export default function ResultSummary({ data }: Props) {
     irr: 0, finalValue: 0, totalInvested: 0, totalReturn: 0, totalReturnPct: 0, shares: 0,
   }
 
+  const lumpsum = strategies.lumpsum ?? empty
   const lucky = strategies.lucky ?? empty
   const dca = strategies.dca ?? empty
   const unlucky = strategies.unlucky ?? empty
@@ -96,6 +97,19 @@ export default function ResultSummary({ data }: Props) {
 
       {/* Cards */}
       <div className="cards-grid">
+        <Card
+          variant="lumpsum"
+          emoji="💰"
+          tag="單筆投入"
+          label={lumpsum.label}
+          description="將全部預算在第一個交易日一次 All-in"
+          irr={lumpsum.irr}
+          finalValue={lumpsum.finalValue}
+          totalInvested={lumpsum.totalInvested}
+          totalReturn={lumpsum.totalReturn}
+          totalReturnPct={lumpsum.totalReturnPct}
+          shares={lumpsum.shares}
+        />
         <Card
           variant="lucky"
           emoji="🍀"
@@ -148,11 +162,12 @@ export default function ResultSummary({ data }: Props) {
         marginBottom: '1.5rem',
         lineHeight: '1.7',
       }}>
-        💡 天選之人 vs 地獄倒霉鬼：IRR 差距{' '}
+        💡 單筆 All-in vs DCA：IRR 差距{' '}
+        <strong>{((lumpsum.irr - dca.irr) * 100).toFixed(2)}%</strong>
+        {' '}｜ 天選之人 vs 地獄倒霉鬼：IRR 差距{' '}
         <strong>{((lucky.irr - unlucky.irr) * 100).toFixed(2)}%</strong>
-        {' '}｜ DCA vs 地獄倒霉鬼：IRR 差距{' '}
+        {' '}｜ DCA vs 倒霉鬼：IRR 差距{' '}
         <strong>{((dca.irr - unlucky.irr) * 100).toFixed(2)}%</strong>
-        {' '}→ 與其追求完美進場時機，持續投入才是關鍵。
       </div>
     </div>
   )

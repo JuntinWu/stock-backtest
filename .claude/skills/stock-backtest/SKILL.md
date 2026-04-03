@@ -1,6 +1,6 @@
 ---
 name: stock-backtest
-description: "Run a 20-year DCA backtest for any stock using natural language. Compares three strategies: Lucky (buy at yearly low), DCA (monthly fixed amount), and Unlucky (buy at yearly high). Use when the user asks to backtest, simulate investing, compare DCA strategies, or asks about long-term returns. Examples: '幫我回測台積電', 'backtest SPY 20 years', '0050 定期定額回測'."
+description: "Run a 20-year DCA backtest for any stock using natural language. Compares three strategies: Lucky (buy at yearly low), DCA (monthly fixed amount), and Unlucky (buy at yearly high). Use when the user asks to backtest, simulate investing, compare DCA strategies, or asks about long-term returns. Examples: '幫我回測台積電', 'backtest VOO 20 years', '0050 定期定額回測'."
 user_invocable: true
 version: "1.0.0"
 ---
@@ -28,7 +28,7 @@ Common ticker mappings (use these when the user refers to stocks by name):
 | 中華電 | 2412.TW |
 | 富邦金 | 2881.TW |
 | 國泰金 | 2882.TW |
-| SPY / S&P 500 ETF | SPY |
+| VOO / S&P 500 ETF | VOO |
 | QQQ / 那斯達克 ETF | QQQ |
 | Apple / 蘋果 | AAPL |
 | Tesla / 特斯拉 | TSLA |
@@ -46,7 +46,7 @@ Extract these from the user's natural language:
 
 | Parameter | Default | Examples |
 |-----------|---------|----------|
-| **ticker** | (required) | 「台積電」→ 2330.TW, 「SPY」→ SPY |
+| **ticker** | (required) | 「台積電」→ 2330.TW, 「VOO」→ VOO |
 | **monthlyAmount** | 10000 (台股) / 500 (美股) | 「每月投 5 萬」→ 50000, 「monthly $1000」→ 1000 |
 | **startYear** | 20 years ago from current year | 「從 2010 開始」→ 2010 |
 | **endYear** | current year | 「到 2023」→ 2023 |

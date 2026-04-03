@@ -116,7 +116,7 @@ function computeStrategy(buys, lastPrice, lastDate, label) {
   };
 }
 
-function buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth) {
+function buildChartData(dcaBuys, luckyBuys, unluckyBuys, lumpsumBuys, byYearMonth) {
   const sortedMonths = Object.entries(byYearMonth).sort(([a], [b]) =>
     a.localeCompare(b)
   );
@@ -125,17 +125,18 @@ function buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth) {
     dca: [...dcaBuys],
     lucky: [...luckyBuys],
     unlucky: [...unluckyBuys],
+    lumpsum: [...lumpsumBuys],
   };
-  const idx = { dca: 0, lucky: 0, unlucky: 0 };
-  const shares = { dca: 0, lucky: 0, unlucky: 0 };
-  const invested = { dca: 0, lucky: 0, unlucky: 0 };
+  const idx = { dca: 0, lucky: 0, unlucky: 0, lumpsum: 0 };
+  const shares = { dca: 0, lucky: 0, unlucky: 0, lumpsum: 0 };
+  const invested = { dca: 0, lucky: 0, unlucky: 0, lumpsum: 0 };
 
   const data = [];
   for (const [monthKey, { last }] of sortedMonths) {
     const endDate = last.date;
     const price = getPrice(last);
 
-    for (const k of ['dca', 'lucky', 'unlucky']) {
+    for (const k of ['dca', 'lucky', 'unlucky', 'lumpsum']) {
       const buys = streams[k];
       while (idx[k] < buys.length && buys[idx[k]].date <= endDate) {
         shares[k] += buys[idx[k]].shares;
@@ -149,6 +150,7 @@ function buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth) {
       dca: Math.round(shares.dca * price),
       lucky: Math.round(shares.lucky * price),
       unlucky: Math.round(shares.unlucky * price),
+      lumpsum: Math.round(shares.lumpsum * price),
       invested: Math.round(invested.dca),
     });
   }
@@ -217,7 +219,7 @@ app.get('/api/backtest', async (req, res) => {
 
     if (!history || history.length < 10) {
       return res.status(404).json({
-        error: `找不到 "${ticker}" 的歷史資料。台股請加 .TW（如 0050.TW），美股直接輸入代號（如 SPY）。`,
+        error: `找不到 "${ticker}" 的歷史資料。台股請加 .TW（如 0050.TW），美股直接輸入代號（如 VOO）。`,
       });
     }
 
@@ -233,13 +235,20 @@ app.get('/api/backtest', async (req, res) => {
     const luckyBuys = buildYearlyBuys(byYear, yearly, 'low');
     const unluckyBuys = buildYearlyBuys(byYear, yearly, 'high');
 
+    // Lumpsum: total amount invested at the very first trading day
+    const totalAmount = monthly * Object.keys(byYearMonth).length;
+    const firstRow = history[0];
+    const firstPrice = getPrice(firstRow);
+    const lumpsumBuys = [{ date: firstRow.date, price: firstPrice, shares: totalAmount / firstPrice, amount: totalAmount }];
+
     const strategies = {
+      lumpsum: computeStrategy(lumpsumBuys, lastPrice, lastDate, `單筆投入（第一天 All-in）`),
       dca: computeStrategy(dcaBuys, lastPrice, lastDate, `不擇時每月定額 DCA`),
       lucky: computeStrategy(luckyBuys, lastPrice, lastDate, `天選之人（年度最低點）`),
       unlucky: computeStrategy(unluckyBuys, lastPrice, lastDate, `地獄倒霉鬼（年度最高點）`),
     };
 
-    const chartData = buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth);
+    const chartData = buildChartData(dcaBuys, luckyBuys, unluckyBuys, lumpsumBuys, byYearMonth);
 
     // Sample to max 120 points for performance
     const sampled =

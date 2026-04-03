@@ -11,7 +11,7 @@ const currentYear = new Date().getFullYear()
 const PRESETS = [
   { label: '2330 2006→', ticker: '2330.TW', monthly: 10000, start: 2006, end: currentYear },
   { label: '0050 2003→', ticker: '0050.TW', monthly: 10000, start: 2003, end: currentYear },
-  { label: 'SPY 2000→', ticker: 'SPY', monthly: 10000, start: 2000, end: currentYear },
+  { label: 'VOO 2000→', ticker: 'VOO', monthly: 10000, start: 2000, end: currentYear },
   { label: 'QQQ 2000→', ticker: 'QQQ', monthly: 10000, start: 2000, end: currentYear },
 ]
 
@@ -84,7 +84,7 @@ export default function BacktestForm({ onSubmit, loading }: Props) {
             type="text"
             value={ticker}
             onChange={(e) => setTicker(e.target.value)}
-            placeholder="0050.TW / SPY / AAPL"
+            placeholder="0050.TW / VOO / AAPL"
           />
           <span className="field-hint">台股加 .TW，美股直接輸入代號</span>
         </div>

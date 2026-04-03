@@ -349,6 +349,7 @@ body::before {
   height: 2px;
 }
 
+.strategy-card.lumpsum::before { background: var(--amber); }
 .strategy-card.lucky::before { background: var(--green); }
 .strategy-card.dca::before { background: var(--blue); }
 .strategy-card.unlucky::before { background: var(--red); }
@@ -366,6 +367,7 @@ body::before {
   font-weight: 600;
 }
 
+.strategy-card.lumpsum .card-tag { color: var(--amber); }
 .strategy-card.lucky .card-tag { color: var(--green); }
 .strategy-card.dca .card-tag { color: var(--blue); }
 .strategy-card.unlucky .card-tag { color: var(--red); }
@@ -394,6 +396,7 @@ body::before {
   margin-bottom: 0.25rem;
 }
 
+.strategy-card.lumpsum .card-irr { color: var(--amber); }
 .strategy-card.lucky .card-irr { color: var(--green); }
 .strategy-card.dca .card-irr { color: var(--blue); }
 .strategy-card.unlucky .card-irr { color: var(--red); }

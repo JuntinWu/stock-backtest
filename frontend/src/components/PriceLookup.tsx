@@ -76,7 +76,7 @@ export default function PriceLookup() {
               type="text"
               value={ticker}
               onChange={(e) => setTicker(e.target.value)}
-              placeholder="0050.TW / SPY / AAPL"
+              placeholder="0050.TW / VOO / AAPL"
             />
             <span className="field-hint">台股加 .TW，美股直接輸入代號</span>
           </div>

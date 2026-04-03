@@ -28,7 +28,7 @@ Common ticker mappings (use these when the user refers to stocks by name):
 | 中華電 | 2412.TW |
 | 富邦金 | 2881.TW |
 | 國泰金 | 2882.TW |
-| SPY / S&P 500 ETF | SPY |
+| VOO / S&P 500 ETF | VOO |
 | QQQ / 那斯達克 ETF | QQQ |
 | Apple / 蘋果 | AAPL |
 | Tesla / 特斯拉 | TSLA |

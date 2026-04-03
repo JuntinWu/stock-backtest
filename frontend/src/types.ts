@@ -20,6 +20,7 @@ export interface ChartPoint {
   dca: number;
   lucky: number;
   unlucky: number;
+  lumpsum: number;
   invested: number;
 }
 
@@ -33,6 +34,7 @@ export interface BacktestMeta {
 
 export interface BacktestResponse {
   strategies: {
+    lumpsum: StrategyResult | null;
     dca: StrategyResult | null;
     lucky: StrategyResult | null;
     unlucky: StrategyResult | null;

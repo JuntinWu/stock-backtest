@@ -108,7 +108,7 @@ function computeStrategy(buys, lastPrice, lastDate, label) {
   };
 }
 
-function buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth) {
+function buildChartData(dcaBuys, luckyBuys, unluckyBuys, lumpsumBuys, byYearMonth) {
   const sortedMonths = Object.entries(byYearMonth).sort(([a], [b]) =>
     a.localeCompare(b)
   );
@@ -117,17 +117,18 @@ function buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth) {
     dca: [...dcaBuys],
     lucky: [...luckyBuys],
     unlucky: [...unluckyBuys],
+    lumpsum: [...lumpsumBuys],
   };
-  const idx = { dca: 0, lucky: 0, unlucky: 0 };
-  const shares = { dca: 0, lucky: 0, unlucky: 0 };
-  const invested = { dca: 0, lucky: 0, unlucky: 0 };
+  const idx = { dca: 0, lucky: 0, unlucky: 0, lumpsum: 0 };
+  const shares = { dca: 0, lucky: 0, unlucky: 0, lumpsum: 0 };
+  const invested = { dca: 0, lucky: 0, unlucky: 0, lumpsum: 0 };
 
   const data = [];
   for (const [monthKey, { last }] of sortedMonths) {
     const endDate = last.date;
     const price = getPrice(last);
 
-    for (const k of ['dca', 'lucky', 'unlucky']) {
+    for (const k of ['dca', 'lucky', 'unlucky', 'lumpsum']) {
       const buys = streams[k];
       while (idx[k] < buys.length && buys[idx[k]].date <= endDate) {
         shares[k] += buys[idx[k]].shares;
@@ -141,6 +142,7 @@ function buildChartData(dcaBuys, luckyBuys, unluckyBuys, byYearMonth) {
       dca: Math.round(shares.dca * price),
       lucky: Math.round(shares.lucky * price),
       unlucky: Math.round(shares.unlucky * price),
+      lumpsum: Math.round(shares.lumpsum * price),
       invested: Math.round(invested.dca),
     });
   }
