@@ -1,0 +1,7 @@
+{
+  "name": "stock-backtest",
+  "private": true,
+  "dependencies": {
+    "yahoo-finance2": "3.14.0"
+  }
+}

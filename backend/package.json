@@ -1,0 +1,18 @@
+{
+  "name": "stock-backtest-backend",
+  "version": "1.0.0",
+  "description": "Stock backtest API server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "yahoo-finance2": "3.14.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
