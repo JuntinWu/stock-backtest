@@ -9,15 +9,15 @@ interface Props {
 const currentYear = new Date().getFullYear()
 
 const PRESETS = [
-  { label: '2330 2006→', ticker: '2330.TW', monthly: 50000, start: 2006, end: currentYear },
-  { label: '0050 2003→', ticker: '0050.TW', monthly: 50000, start: 2003, end: currentYear },
-  { label: 'SPY 2000→', ticker: 'SPY', monthly: 1000, start: 2000, end: currentYear },
-  { label: 'QQQ 2000→', ticker: 'QQQ', monthly: 1000, start: 2000, end: currentYear },
+  { label: '2330 2006→', ticker: '2330.TW', monthly: 10000, start: 2006, end: currentYear },
+  { label: '0050 2003→', ticker: '0050.TW', monthly: 10000, start: 2003, end: currentYear },
+  { label: 'SPY 2000→', ticker: 'SPY', monthly: 10000, start: 2000, end: currentYear },
+  { label: 'QQQ 2000→', ticker: 'QQQ', monthly: 10000, start: 2000, end: currentYear },
 ]
 
 export default function BacktestForm({ onSubmit, loading }: Props) {
   const [ticker, setTicker] = useState('0050.TW')
-  const [monthlyAmount, setMonthlyAmount] = useState('50000')
+  const [monthlyAmount, setMonthlyAmount] = useState('10000')
   const [startYear, setStartYear] = useState('2003')
   const [endYear, setEndYear] = useState(String(currentYear))
 
@@ -95,7 +95,7 @@ export default function BacktestForm({ onSubmit, loading }: Props) {
             type="number"
             value={monthlyAmount}
             onChange={(e) => setMonthlyAmount(e.target.value)}
-            placeholder="50000"
+            placeholder="10000"
             min="1"
           />
           <span className="field-hint">年化 = 此金額 × 12</span>

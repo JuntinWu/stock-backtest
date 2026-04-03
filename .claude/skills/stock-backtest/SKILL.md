@@ -122,7 +122,7 @@ After fetching data, present the results as follows. Use 繁體中文 if user sp
 | 策略 | 年化報酬率 (IRR) | 最終資產 | 投入本金 | 總報酬 | 報酬率 | 累積股數 |
 |------|-----------------|---------|---------|-------|-------|---------|
 | 🍀 天選之人（年度最低點） | X.XX% | XXX | XXX | XXX | +XX.XX% | XX.XX |
-| 📅 每月定額 DCA | X.XX% | XXX | XXX | XXX | +XX.XX% | XX.XX |
+| 📅 不擇時定期定額 DCA | X.XX% | XXX | XXX | XXX | +XX.XX% | XX.XX |
 | 😱 地獄倒霉鬼（年度最高點） | X.XX% | XXX | XXX | XXX | +XX.XX% | XX.XX |
 ```
 

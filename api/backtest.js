@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
     const unluckyBuys = buildYearlyBuys(byYear, yearly, 'high');
 
     const strategies = {
-      dca: computeStrategy(dcaBuys, lastPrice, lastDate, '每月定額 DCA'),
+      dca: computeStrategy(dcaBuys, lastPrice, lastDate, '不擇時每月定額 DCA'),
       lucky: computeStrategy(luckyBuys, lastPrice, lastDate, '天選之人（年度最低點）'),
       unlucky: computeStrategy(unluckyBuys, lastPrice, lastDate, '地獄倒霉鬼（年度最高點）'),
     };

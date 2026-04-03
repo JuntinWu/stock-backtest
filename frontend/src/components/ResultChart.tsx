@@ -24,7 +24,7 @@ function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   const rows = [
     { key: 'lucky',   label: '🍀 天選之人',     color: 'var(--green)' },
-    { key: 'dca',     label: '📅 DCA',         color: 'var(--blue)' },
+    { key: 'dca',     label: '📅 不擇時進場 DCA', color: 'var(--blue)' },
     { key: 'unlucky', label: '😱 地獄倒霉鬼',   color: 'var(--red)' },
     { key: 'invested', label: '💰 投入本金',    color: 'var(--text-muted)' },
   ]
@@ -68,7 +68,7 @@ export default function ResultChart({ data, ticker }: Props) {
           </div>
           <div className="legend-item">
             <div className="legend-dot" style={{ background: 'var(--blue)' }} />
-            DCA
+            不擇時進場 DCA
           </div>
           <div className="legend-item">
             <div className="legend-dot" style={{ background: 'var(--red)' }} />

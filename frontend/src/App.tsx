@@ -50,7 +50,7 @@ export default function App() {
         </div>
         <h1>股票 <span>回測</span> 系統</h1>
         <p className="header-sub">
-          天選之人 vs DCA vs 地獄倒霉鬼 ｜ 真實 Yahoo Finance 資料 ｜ XIRR 年化報酬計算
+          天選之人 vs 不擇時進場 vs 地獄倒霉鬼 ｜ 真實 Yahoo Finance 資料 ｜ XIRR 年化報酬計算
         </p>
       </header>
 
