@@ -2,6 +2,7 @@
   "name": "stock-backtest",
   "private": true,
   "dependencies": {
+    "vercel": "^50.38.3",
     "yahoo-finance2": "3.14.0"
   }
 }

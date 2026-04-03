@@ -375,6 +375,14 @@ body::before {
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.card-desc {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
   margin-bottom: 1rem;
 }
 

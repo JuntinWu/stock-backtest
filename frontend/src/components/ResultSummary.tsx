@@ -19,6 +19,7 @@ interface CardProps {
   emoji: string
   tag: string
   label: string
+  description: string
   irr: number
   finalValue: number
   totalInvested: number
@@ -27,7 +28,7 @@ interface CardProps {
   shares: number
 }
 
-function Card({ variant, emoji, tag, label, irr, finalValue, totalInvested, totalReturn, totalReturnPct, shares }: CardProps) {
+function Card({ variant, emoji, tag, label, description, irr, finalValue, totalInvested, totalReturn, totalReturnPct, shares }: CardProps) {
   const safeIrr = Number.isFinite(irr) ? irr : 0
   const safeFinalValue = Number.isFinite(finalValue) ? finalValue : 0
   const safeTotalInvested = Number.isFinite(totalInvested) ? totalInvested : 0
@@ -39,6 +40,7 @@ function Card({ variant, emoji, tag, label, irr, finalValue, totalInvested, tota
     <div className={`strategy-card ${variant}`}>
       <div className="card-tag">{tag}</div>
       <div className="card-label">{emoji} {label}</div>
+      <div className="card-desc">{description}</div>
       <div className="card-irr">{(safeIrr * 100).toFixed(2)}%</div>
       <div className="card-irr-label">年化報酬率 (IRR)</div>
       <div className="card-stats">
@@ -75,7 +77,7 @@ export default function ResultSummary({ data }: Props) {
   const { strategies, metadata } = data
 
   const empty: CardProps = {
-    variant: 'dca', emoji: '', tag: '', label: '無資料',
+    variant: 'dca', emoji: '', tag: '', label: '無資料', description: '',
     irr: 0, finalValue: 0, totalInvested: 0, totalReturn: 0, totalReturnPct: 0, shares: 0,
   }
 
@@ -99,6 +101,7 @@ export default function ResultSummary({ data }: Props) {
           emoji="🍀"
           tag="天選之人"
           label={lucky.label}
+          description="每年將 12 個月預算一次投入在該年度最低價"
           irr={lucky.irr}
           finalValue={lucky.finalValue}
           totalInvested={lucky.totalInvested}
@@ -111,6 +114,7 @@ export default function ResultSummary({ data }: Props) {
           emoji="📅"
           tag="每月定額"
           label={dca.label}
+          description="每月月初固定金額買入，不擇時進場"
           irr={dca.irr}
           finalValue={dca.finalValue}
           totalInvested={dca.totalInvested}
@@ -123,6 +127,7 @@ export default function ResultSummary({ data }: Props) {
           emoji="😱"
           tag="地獄倒霉鬼"
           label={unlucky.label}
+          description="每年將 12 個月預算一次投入在該年度最高價"
           irr={unlucky.irr}
           finalValue={unlucky.finalValue}
           totalInvested={unlucky.totalInvested}

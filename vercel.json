@@ -1,9 +1,13 @@
 {
+  "framework": null,
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
-  "framework": null,
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "api/_lib/**"
+    }
+  },
   "rewrites": [
-    { "source": "/api/backtest", "destination": "/api/backtest" },
-    { "source": "/api/prices", "destination": "/api/prices" }
+    { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }
