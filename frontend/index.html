@@ -1,12 +1,44 @@
 <!doctype html>
-<html lang="zh-TW">
+<html lang="zh-TW" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StockPilot — 投資策略回測 ｜ 樂活五線譜 ｜ 歷史價格查詢</title>
+    <meta name="description" content="用 Yahoo Finance 真實數據回測 DCA、單筆投入、天選之人等投資策略，搭配樂活五線譜判斷買賣時機。支援台股、美股。" />
+    <meta name="keywords" content="股票回測,DCA,定期定額,樂活五線譜,XIRR,Yahoo Finance,投資策略,台股,美股,ETF,0050,VOO" />
+    <meta name="author" content="StockPilot" />
+    <meta name="theme-color" content="#060a0f" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f0f4f8" media="(prefers-color-scheme: light)" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="StockPilot — 真實數據驅動的投資分析工具" />
+    <meta property="og:description" content="DCA vs 天選之人 vs All-in 回測比較 ｜ 樂活五線譜買賣訊號 ｜ Yahoo Finance 即時數據" />
+    <meta property="og:site_name" content="StockPilot" />
+    <meta property="og:locale" content="zh_TW" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="StockPilot — 真實數據驅動的投資分析工具" />
+    <meta name="twitter:description" content="DCA vs 天選之人 vs All-in 回測比較 ｜ 樂活五線譜買賣訊號" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- Persist theme before render to avoid flash -->
+    <script>
+      (function() {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

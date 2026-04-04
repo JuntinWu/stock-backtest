@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   LineChart,
   Line,
@@ -28,13 +28,17 @@ const ZONE_MAP: Record<string, { label: string; color: string; bg: string }> = {
 }
 
 // Line colors matching reference: red/pink (optimistic), gray (trend), blue (pessimistic)
-const LINE_COLORS = {
+function getCloseColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--chart-close').trim() || '#e8f0f8'
+}
+
+const LINE_COLORS_BASE = {
   plus2s:  '#f43f5e',   // red — +2σ
   plus1s:  '#f4a0ab',   // pink — +1σ
   trend:   '#8b949e',   // gray — trend
   minus1s: '#79c0ff',   // light blue — -1σ
   minus2s: '#388bfd',   // blue — -2σ
-  close:   '#e8f0f8',   // white — close price
+  close:   '#e8f0f8',   // placeholder, overridden at render
 }
 
 const LINE_LABELS: Record<string, string> = {
@@ -50,16 +54,17 @@ function fmtPrice(v: number) {
   return v >= 1000 ? v.toFixed(0) : v.toFixed(2)
 }
 
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label, lineColors }: any) {
   if (!active || !payload?.length) return null
 
+  const colors = lineColors || LINE_COLORS_BASE
   const rows = [
-    { key: 'close',   color: LINE_COLORS.close },
-    { key: 'plus2s',  color: LINE_COLORS.plus2s },
-    { key: 'plus1s',  color: LINE_COLORS.plus1s },
-    { key: 'trend',   color: LINE_COLORS.trend },
-    { key: 'minus1s', color: LINE_COLORS.minus1s },
-    { key: 'minus2s', color: LINE_COLORS.minus2s },
+    { key: 'close',   color: colors.close },
+    { key: 'plus2s',  color: colors.plus2s },
+    { key: 'plus1s',  color: colors.plus1s },
+    { key: 'trend',   color: colors.trend },
+    { key: 'minus1s', color: colors.minus1s },
+    { key: 'minus2s', color: colors.minus2s },
   ]
 
   const dataMap: Record<string, number> = {}
@@ -91,6 +96,12 @@ export default function LOHASAnalysis() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<LohasResponse | null>(null)
+
+  // Theme-aware close line color
+  const LINE_COLORS = useMemo(() => ({
+    ...LINE_COLORS_BASE,
+    close: getCloseColor(),
+  }), [data]) // re-compute when data changes (captures theme at render time)
 
   const applyPreset = (p: typeof PRESETS[0]) => {
     setTicker(p.ticker)
@@ -334,7 +345,7 @@ export default function LOHASAnalysis() {
                   width={65}
                   domain={['auto', 'auto']}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip lineColors={LINE_COLORS} />} />
 
                 {/* +2σ — red dashed */}
                 <Line

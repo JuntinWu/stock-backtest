@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { BacktestParams, BacktestResponse } from './types'
 import BacktestForm from './components/BacktestForm'
 import ResultSummary from './components/ResultSummary'
@@ -7,12 +7,28 @@ import PriceLookup from './components/PriceLookup'
 import LOHASAnalysis from './components/LOHASAnalysis'
 
 type Tab = 'backtest' | 'lohas' | 'prices'
+type Theme = 'dark' | 'light'
+
+function useTheme() {
+  const [theme, setTheme] = useState<Theme>(() => {
+    return (document.documentElement.getAttribute('data-theme') as Theme) || 'dark'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  return { theme, toggle }
+}
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('backtest')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BacktestResponse | null>(null)
+  const { theme, toggle: toggleTheme } = useTheme()
 
   const handleSubmit = async (params: BacktestParams) => {
     setLoading(true)
@@ -44,17 +60,47 @@ export default function App() {
 
   return (
     <div className="app">
-      {/* Header */}
-      <header className="header">
-        <div className="header-top">
-          <span className="header-badge">LIVE DATA</span>
-          <span className="header-badge" style={{ color: 'var(--blue)', background: 'var(--blue-glow)', borderColor: 'var(--blue-dim)' }}>YAHOO FINANCE</span>
+      {/* Theme Toggle */}
+      <div className="theme-toggle" onClick={toggleTheme} title="切換明暗模式">
+        <span className="toggle-label toggle-icon-sun">&#9728;&#65039;</span>
+        <div className="toggle-track">
+          <div className="toggle-knob" />
         </div>
-        <h1>Stock<span>Pilot</span></h1>
-        <p className="header-sub">
-          投資策略回測 ｜ 樂活五線譜 ｜ 歷史價格查詢 — 真實數據驅動的投資分析工具
+        <span className="toggle-label toggle-icon-moon">&#127769;</span>
+      </div>
+
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-badges">
+          <span className="hero-badge live">LIVE DATA</span>
+          <span className="hero-badge source">YAHOO FINANCE</span>
+        </div>
+        <h1 className="hero-title">Stock<span className="accent">Pilot</span></h1>
+        <p className="hero-tagline">
+          用<strong>真實歷史股價</strong>驅動的投資分析工具。回測 DCA、單筆投入、天選之人等策略的長期表現，搭配<strong>樂活五線譜</strong>判斷目前股價位置，讓數據告訴你最佳投資時機。
         </p>
-      </header>
+        <div className="hero-features">
+          <span className="hero-pill"><span className="pill-icon">&#128202;</span> 四策略回測比較</span>
+          <span className="hero-pill"><span className="pill-icon">&#127925;</span> 樂活五線譜分析</span>
+          <span className="hero-pill"><span className="pill-icon">&#128269;</span> 歷史價格查詢</span>
+          <span className="hero-pill"><span className="pill-icon">&#127470;&#127481;</span> 台股 / 美股</span>
+          <span className="hero-pill"><span className="pill-icon">&#128200;</span> XIRR 年化報酬</span>
+        </div>
+        <div className="hero-stats">
+          <div className="hero-stat">
+            <div className="hero-stat-value">20+</div>
+            <div className="hero-stat-label">年回測區間</div>
+          </div>
+          <div className="hero-stat">
+            <div className="hero-stat-value">4</div>
+            <div className="hero-stat-label">投資策略比較</div>
+          </div>
+          <div className="hero-stat">
+            <div className="hero-stat-value">&#127757; 全球</div>
+            <div className="hero-stat-label">市場支援</div>
+          </div>
+        </div>
+      </section>
 
       {/* Tabs */}
       <div className="tab-bar">
@@ -86,7 +132,7 @@ export default function App() {
 
           {error && (
             <div className="error-box">
-              <span>⚠</span>
+              <span>&#9888;</span>
               <span>{error}</span>
             </div>
           )}
@@ -104,7 +150,7 @@ export default function App() {
               <ResultChart data={result.chartData} ticker={result.metadata.ticker} />
 
               <p className="disclaimer">
-                ⚠ 本工具資料來源為 Yahoo Finance，使用調整後收盤價（adjClose）計算，
+                &#9888; 本工具資料來源為 Yahoo Finance，使用調整後收盤價（adjClose）計算，
                 已反映股息再投入及股票分割。回測結果僅供參考，過去績效不代表未來表現，
                 不構成任何投資建議。所有投資皆有風險，請自行評估。
               </p>
@@ -118,6 +164,12 @@ export default function App() {
 
       {/* Price Lookup Tab */}
       {tab === 'prices' && <PriceLookup />}
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-brand">Stock<span>Pilot</span></div>
+        <div className="footer-copy">&#169; 2026 StockPilot — 真實數據驅動的投資分析工具</div>
+      </footer>
     </div>
   )
 }
