@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Mockup - 股票分析工具</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary: #080c10;
+  --bg-secondary: #0d1117;
+  --bg-card: #111820;
+  --bg-input: #0a0f14;
+  --border: #1e2d3d;
+  --border-bright: #2a3f55;
+  --text-primary: #e8f0f8;
+  --text-secondary: #6e8ca8;
+  --text-muted: #3d5268;
+  --green: #00d084;
+  --green-dim: #00903b;
+  --green-glow: rgba(0, 208, 132, 0.12);
+  --blue: #38bdf8;
+  --blue-dim: #0369a1;
+  --blue-glow: rgba(56, 189, 248, 0.12);
+  --red: #f43f5e;
+  --red-dim: #9f1239;
+  --red-glow: rgba(244, 63, 94, 0.12);
+  --amber: #f59e0b;
+  --amber-glow: rgba(245, 158, 11, 0.1);
+  --purple: #a78bfa;
+  --purple-dim: #6d28d9;
+  --purple-glow: rgba(167, 139, 250, 0.12);
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --radius: 6px;
+  --radius-lg: 12px;
+}
+
+body {
+  font-family: var(--font-mono);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; position: relative; z-index: 1; }
+
+/* ─── Header ─── */
+.header { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+.header-top { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+
+.header-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--green);
+  background: var(--green-glow);
+  border: 1px solid var(--green-dim);
+  padding: 0.12rem 0.45rem;
+  border-radius: 3px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.header h1 .accent { color: var(--green); }
+
+.header-sub {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 0.35rem;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Tabs ─── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.tab-btn:hover { color: var(--text-secondary); }
+.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+.tab-btn .tab-icon { font-size: 0.9rem; }
+.tab-btn .tab-badge {
+  font-size: 0.58rem;
+  padding: 0.08rem 0.35rem;
+  border-radius: 3px;
+  background: var(--purple-glow);
+  color: var(--purple);
+  border: 1px solid var(--purple-dim);
+  letter-spacing: 0.06em;
+}
+
+/* ─── Tab content areas ─── */
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Form Card ─── */
+.form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.form-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.form-title::before { content: '\25B6'; color: var(--green); font-size: 0.6rem; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.field input, .field select {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  padding: 0.6rem 0.75rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--green-dim);
+  box-shadow: 0 0 0 3px var(--green-glow);
+}
+.field-hint { font-size: 0.67rem; color: var(--text-muted); letter-spacing: 0.03em; }
+
+.submit-btn {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: var(--green);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.7rem 2rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  text-transform: uppercase;
+}
+.submit-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+/* ─── Presets ─── */
+.presets { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.preset-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  color: var(--text-secondary);
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: color 0.15s, border-color 0.15s;
+}
+.preset-btn:hover { color: var(--green); border-color: var(--green-dim); }
+
+/* ─── Mock Cards ─── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.strategy-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.strategy-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.strategy-card.lumpsum::before { background: var(--amber); }
+.strategy-card.lucky::before { background: var(--green); }
+.strategy-card.dca::before { background: var(--blue); }
+.strategy-card.unlucky::before { background: var(--red); }
+
+.card-tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+.strategy-card.lumpsum .card-tag { color: var(--amber); }
+.strategy-card.lucky .card-tag { color: var(--green); }
+.strategy-card.dca .card-tag { color: var(--blue); }
+.strategy-card.unlucky .card-tag { color: var(--red); }
+
+.card-label { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+.card-desc { font-size: 0.66rem; color: var(--text-muted); margin-bottom: 0.8rem; line-height: 1.4; }
+.card-irr { font-family: var(--font-mono); font-size: 2rem; font-weight: 600; line-height: 1; margin-bottom: 0.2rem; }
+.strategy-card.lumpsum .card-irr { color: var(--amber); }
+.strategy-card.lucky .card-irr { color: var(--green); }
+.strategy-card.dca .card-irr { color: var(--blue); }
+.strategy-card.unlucky .card-irr { color: var(--red); }
+.card-irr-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ─── Chart placeholder ─── */
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+}
+.chart-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.chart-subtitle { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 1rem; }
+.chart-placeholder {
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(180deg, rgba(0,208,132,0.05) 0%, rgba(56,189,248,0.03) 50%, rgba(244,63,94,0.03) 100%);
+  border: 1px dashed var(--border-bright);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ─── LOHAS Five Lines mockup ─── */
+.lohas-chart-placeholder {
+  width: 100%;
+  height: 350px;
+  background: linear-gradient(180deg,
+    rgba(244,63,94,0.04) 0%,
+    rgba(245,158,11,0.04) 25%,
+    rgba(56,189,248,0.04) 50%,
+    rgba(0,208,132,0.04) 75%,
+    rgba(167,139,250,0.04) 100%);
+  border: 1px dashed var(--border-bright);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.lohas-lines {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  position: relative;
+}
+
+.lohas-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.lohas-line-bar {
+  flex: 1;
+  height: 2px;
+  border-radius: 1px;
+}
+.lohas-line-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  width: 80px;
+  text-align: right;
+}
+
+.lohas-line.optimistic .lohas-line-bar { background: var(--red); opacity: 0.7; }
+.lohas-line.optimistic .lohas-line-label { color: var(--red); }
+.lohas-line.rel-optimistic .lohas-line-bar { background: var(--amber); opacity: 0.7; }
+.lohas-line.rel-optimistic .lohas-line-label { color: var(--amber); }
+.lohas-line.trend .lohas-line-bar { background: var(--blue); opacity: 0.7; }
+.lohas-line.trend .lohas-line-label { color: var(--blue); }
+.lohas-line.rel-pessimistic .lohas-line-bar { background: var(--green); opacity: 0.7; }
+.lohas-line.rel-pessimistic .lohas-line-label { color: var(--green); }
+.lohas-line.pessimistic .lohas-line-bar { background: var(--purple); opacity: 0.7; }
+.lohas-line.pessimistic .lohas-line-label { color: var(--purple); }
+
+.lohas-price-dot {
+  position: absolute;
+  width: 10px; height: 10px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(232, 240, 248, 0.4);
+  right: 30%;
+  top: 55%;
+}
+
+/* ─── Signal cards ─── */
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.signal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  text-align: center;
+}
+.signal-label { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+.signal-value { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; margin-bottom: 0.25rem; }
+.signal-hint { font-size: 0.65rem; color: var(--text-muted); }
+
+.signal-card.buy .signal-value { color: var(--green); }
+.signal-card.sell .signal-value { color: var(--red); }
+.signal-card.hold .signal-value { color: var(--amber); }
+.signal-card.neutral .signal-value { color: var(--blue); }
+
+/* ─── Legend ─── */
+.legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+.legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; color: var(--text-secondary); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── Insight box ─── */
+.insight-box {
+  background: var(--amber-glow);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  font-size: 0.78rem;
+  color: var(--amber);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+.insight-box.purple {
+  background: var(--purple-glow);
+  border-color: rgba(167,139,250,0.3);
+  color: var(--purple);
+}
+
+/* ─── Disclaimer ─── */
+.disclaimer {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  line-height: 1.7;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .tab-btn { font-size: 0.72rem; padding: 0.5rem 0.8rem; }
+  .cards-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ─── Redesigned Header ─── -->
+  <header class="header">
+    <div class="header-top">
+      <span class="header-badge">LIVE DATA</span>
+      <span class="header-badge" style="color:var(--blue);background:var(--blue-glow);border-color:var(--blue-dim);">YAHOO FINANCE</span>
+    </div>
+    <h1>Stock<span class="accent">Pilot</span></h1>
+    <p class="header-sub">
+      投資策略回測 ｜ 樂活五線譜 ｜ 歷史價格查詢 — 真實數據驅動的投資分析工具
+    </p>
+  </header>
+
+  <!-- ─── Tab Bar (3 tabs) ─── -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('backtest')">
+      <span class="tab-icon">&#x1F4CA;</span> 回測分析
+    </button>
+    <button class="tab-btn" onclick="switchTab('lohas')">
+      <span class="tab-icon">&#x1F3B5;</span> 樂活五線譜
+      <span class="tab-badge">NEW</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('prices')">
+      <span class="tab-icon">&#x1F50D;</span> 歷史價格
+    </button>
+  </div>
+
+  <!-- ═══════════ Tab 1: 回測分析 ═══════════ -->
+  <div class="tab-content active" id="tab-backtest">
+    <div class="form-card">
+      <div class="form-title">回測參數設定</div>
+      <div class="presets">
+        <button class="preset-btn">2330 2006&rarr;</button>
+        <button class="preset-btn">0050 2003&rarr;</button>
+        <button class="preset-btn">VOO 2010&rarr;</button>
+        <button class="preset-btn">QQQ 2000&rarr;</button>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>股票代號</label>
+          <input type="text" value="0050.TW" placeholder="0050.TW / VOO / AAPL">
+          <span class="field-hint">台股加 .TW，美股直接輸入</span>
+        </div>
+        <div class="field">
+          <label>每月定投金額</label>
+          <input type="number" value="10000" placeholder="10000">
+        </div>
+        <div class="field">
+          <label>開始年份</label>
+          <input type="number" value="2003">
+        </div>
+        <div class="field">
+          <label>結束年份</label>
+          <input type="number" value="2026">
+        </div>
+      </div>
+      <button class="submit-btn">&#x25B6; 執行回測</button>
+    </div>
+
+    <!-- Mock Results -->
+    <div class="cards-grid">
+      <div class="strategy-card lumpsum">
+        <div class="card-tag">單筆投入</div>
+        <div class="card-label">&#x1F4B0; 單筆投入（第一天 All-in）</div>
+        <div class="card-desc">將全部預算在第一個交易日一次 All-in</div>
+        <div class="card-irr">14.82%</div>
+        <div class="card-irr-label">年化報酬率 (IRR)</div>
+      </div>
+      <div class="strategy-card lucky">
+        <div class="card-tag">天選之人</div>
+        <div class="card-label">&#x1F340; 天選之人（年度最低點）</div>
+        <div class="card-desc">每年將 12 個月預算一次投入在該年度最低價</div>
+        <div class="card-irr">12.45%</div>
+        <div class="card-irr-label">年化報酬率 (IRR)</div>
+      </div>
+      <div class="strategy-card dca">
+        <div class="card-tag">每月定額</div>
+        <div class="card-label">&#x1F4C5; 不擇時每月定額 DCA</div>
+        <div class="card-desc">每月月初固定金額買入，不擇時進場</div>
+        <div class="card-irr">10.89%</div>
+        <div class="card-irr-label">年化報酬率 (IRR)</div>
+      </div>
+      <div class="strategy-card unlucky">
+        <div class="card-tag">地獄倒霉鬼</div>
+        <div class="card-label">&#x1F631; 地獄倒霉鬼（年度最高點）</div>
+        <div class="card-desc">每年將 12 個月預算一次投入在該年度最高價</div>
+        <div class="card-irr">9.21%</div>
+        <div class="card-irr-label">年化報酬率 (IRR)</div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      &#x1F4A1; 單筆 All-in vs DCA：IRR 差距 <strong>3.93%</strong>
+      ｜ 天選之人 vs 地獄倒霉鬼：IRR 差距 <strong>3.24%</strong>
+      ｜ DCA vs 倒霉鬼：IRR 差距 <strong>1.68%</strong>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">資產成長走勢</div>
+      <div class="chart-subtitle">各策略累積資產市值比較</div>
+      <div class="chart-placeholder">[ Recharts 走勢圖 ]</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ Tab 2: 樂活五線譜 ═══════════ -->
+  <div class="tab-content" id="tab-lohas">
+    <div class="form-card">
+      <div class="form-title">樂活五線譜參數</div>
+      <div class="presets">
+        <button class="preset-btn">0050.TW</button>
+        <button class="preset-btn">0056.TW</button>
+        <button class="preset-btn">2330.TW</button>
+        <button class="preset-btn">VOO</button>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>股票代號</label>
+          <input type="text" value="0050.TW" placeholder="0050.TW">
+          <span class="field-hint">適合 ETF 或具均值回歸特性的標的</span>
+        </div>
+        <div class="field">
+          <label>回歸期間（年）</label>
+          <select>
+            <option>3 年</option>
+            <option selected>5 年</option>
+            <option>10 年</option>
+          </select>
+          <span class="field-hint">線性迴歸取樣區間</span>
+        </div>
+        <div class="field">
+          <label>標準差倍數</label>
+          <input type="number" value="2" step="0.5" min="0.5" max="3">
+          <span class="field-hint">預設 2 倍標準差</span>
+        </div>
+      </div>
+      <button class="submit-btn">&#x25B6; 計算五線譜</button>
+    </div>
+
+    <!-- Signal Summary -->
+    <div class="signal-grid">
+      <div class="signal-card buy">
+        <div class="signal-label">目前位置</div>
+        <div class="signal-value">偏低</div>
+        <div class="signal-hint">接近相對悲觀線</div>
+      </div>
+      <div class="signal-card neutral">
+        <div class="signal-label">收盤價</div>
+        <div class="signal-value">$176.50</div>
+        <div class="signal-hint">2026-04-03</div>
+      </div>
+      <div class="signal-card neutral">
+        <div class="signal-label">R&sup2; 決定係數</div>
+        <div class="signal-value">0.92</div>
+        <div class="signal-hint">趨勢解釋力強</div>
+      </div>
+      <div class="signal-card hold">
+        <div class="signal-label">CV 變異係數</div>
+        <div class="signal-value">18.3%</div>
+        <div class="signal-hint">中等波動</div>
+      </div>
+    </div>
+
+    <!-- Five Lines Chart -->
+    <div class="chart-card">
+      <div class="chart-title">樂活五線譜</div>
+      <div class="chart-subtitle">線性迴歸趨勢 ± 標準差</div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span> 樂觀線 (+2&sigma;)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span> 相對樂觀 (+1&sigma;)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span> 趨勢線</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span> 相對悲觀 (-1&sigma;)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span> 悲觀線 (-2&sigma;)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--text-primary)"></span> 收盤價</div>
+      </div>
+      <div class="lohas-chart-placeholder">
+        <div class="lohas-lines">
+          <div class="lohas-line optimistic">
+            <div class="lohas-line-label">樂觀 +2&sigma;</div>
+            <div class="lohas-line-bar"></div>
+          </div>
+          <div class="lohas-line rel-optimistic">
+            <div class="lohas-line-label">相對樂觀</div>
+            <div class="lohas-line-bar"></div>
+          </div>
+          <div class="lohas-line trend">
+            <div class="lohas-line-label">趨勢線</div>
+            <div class="lohas-line-bar"></div>
+          </div>
+          <div class="lohas-line rel-pessimistic">
+            <div class="lohas-line-label">相對悲觀</div>
+            <div class="lohas-line-bar"></div>
+          </div>
+          <div class="lohas-line pessimistic">
+            <div class="lohas-line-label">悲觀 -2&sigma;</div>
+            <div class="lohas-line-bar"></div>
+          </div>
+          <div class="lohas-price-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box purple">
+      &#x1F3B5; 目前股價位於<strong>相對悲觀線</strong>附近，歷史統計顯示此區間繼續下跌機率較低。
+      R&sup2; = 0.92 表示線性迴歸解釋力強，五線譜參考價值較高。
+    </div>
+  </div>
+
+  <!-- ═══════════ Tab 3: 歷史價格 ═══════════ -->
+  <div class="tab-content" id="tab-prices">
+    <div class="form-card">
+      <div class="form-title">歷史價格查詢</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>股票代號</label>
+          <input type="text" value="0050.TW">
+        </div>
+        <div class="field">
+          <label>開始日期</label>
+          <input type="date" value="2026-01-01">
+        </div>
+        <div class="field">
+          <label>結束日期</label>
+          <input type="date" value="2026-04-03">
+        </div>
+      </div>
+      <button class="submit-btn">&#x25B6; 查詢價格</button>
+    </div>
+    <div class="chart-placeholder" style="margin-bottom:2rem;">[ 價格表格 ]</div>
+  </div>
+
+  <p class="disclaimer">
+    &#x26A0; 資料來源為 Yahoo Finance，使用調整後收盤價（adjClose）。
+    回測與五線譜結果僅供參考，不構成任何投資建議。所有投資皆有風險，請自行評估。
+  </p>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -4,8 +4,9 @@ import BacktestForm from './components/BacktestForm'
 import ResultSummary from './components/ResultSummary'
 import ResultChart from './components/ResultChart'
 import PriceLookup from './components/PriceLookup'
+import LOHASAnalysis from './components/LOHASAnalysis'
 
-type Tab = 'backtest' | 'prices'
+type Tab = 'backtest' | 'lohas' | 'prices'
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('backtest')
@@ -47,10 +48,11 @@ export default function App() {
       <header className="header">
         <div className="header-top">
           <span className="header-badge">LIVE DATA</span>
+          <span className="header-badge" style={{ color: 'var(--blue)', background: 'var(--blue-glow)', borderColor: 'var(--blue-dim)' }}>YAHOO FINANCE</span>
         </div>
-        <h1>股票 <span>回測</span> 系統</h1>
+        <h1>Stock<span>Pilot</span></h1>
         <p className="header-sub">
-          天選之人 vs 不擇時進場 vs 地獄倒霉鬼 ｜ 真實 Yahoo Finance 資料 ｜ XIRR 年化報酬計算
+          投資策略回測 ｜ 樂活五線譜 ｜ 歷史價格查詢 — 真實數據驅動的投資分析工具
         </p>
       </header>
 
@@ -61,6 +63,13 @@ export default function App() {
           onClick={() => setTab('backtest')}
         >
           回測分析
+        </button>
+        <button
+          className={`tab-btn ${tab === 'lohas' ? 'active' : ''}`}
+          onClick={() => setTab('lohas')}
+        >
+          樂活五線譜
+          <span className="tab-badge-new">NEW</span>
         </button>
         <button
           className={`tab-btn ${tab === 'prices' ? 'active' : ''}`}
@@ -103,6 +112,9 @@ export default function App() {
           )}
         </>
       )}
+
+      {/* LOHAS Five Lines Tab */}
+      {tab === 'lohas' && <LOHASAnalysis />}
 
       {/* Price Lookup Tab */}
       {tab === 'prices' && <PriceLookup />}

@@ -333,6 +333,70 @@ app.get('/api/prices', async (req, res) => {
   }
 });
 
+// ─── LOHAS Five Lines API ──────────────────────────────────────────────────
+const { computeLohas } = require('../api/_lib/lohas');
+
+app.get('/api/lohas', async (req, res) => {
+  const { ticker, period, sigma } = req.query;
+
+  if (!ticker) {
+    return res.status(400).json({ error: '缺少必要參數：ticker' });
+  }
+
+  const periodYears = parseInt(period, 10) || 5;
+  if (![3, 5, 10].includes(periodYears)) {
+    return res.status(400).json({ error: '期間僅支援 3、5、10 年' });
+  }
+
+  const sigmaMult = parseFloat(sigma) || 2;
+  if (sigmaMult < 0.5 || sigmaMult > 3) {
+    return res.status(400).json({ error: '標準差倍數須介於 0.5 ~ 3' });
+  }
+
+  try {
+    const now = new Date();
+    const period1 = new Date(now.getFullYear() - periodYears, now.getMonth(), now.getDate());
+    const period2 = now;
+
+    const result = await fetchWithRetry(() =>
+      yahooFinance.chart(ticker.trim(), {
+        period1,
+        period2,
+        interval: '1d',
+      })
+    );
+
+    const history = (result.quotes || [])
+      .filter((q) => q.close != null || q.adjclose != null)
+      .map((q) => ({
+        date: new Date(q.date),
+        close: q.close,
+        adjClose: q.adjclose ?? q.close,
+      }));
+
+    if (!history || history.length < 10) {
+      return res.status(404).json({
+        error: `找不到 "${ticker}" 的歷史資料。台股請加 .TW（如 0050.TW），美股直接輸入代號（如 VOO）。`,
+      });
+    }
+
+    history.sort((a, b) => a.date - b.date);
+
+    const lohasResult = computeLohas(history, sigmaMult);
+
+    res.json({
+      ticker: ticker.trim().toUpperCase(),
+      period: periodYears,
+      sigmaMult,
+      ...lohasResult,
+    });
+  } catch (err) {
+    console.error(err);
+    const msg = err.message || '未知錯誤';
+    res.status(500).json({ error: `分析失敗：${msg}` });
+  }
+});
+
 app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 
 app.listen(PORT, () => {

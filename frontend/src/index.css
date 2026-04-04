@@ -27,6 +27,9 @@
   --red-glow: rgba(244, 63, 94, 0.12);
   --amber: #f59e0b;
   --amber-glow: rgba(245, 158, 11, 0.1);
+  --purple: #a78bfa;
+  --purple-dim: #6d28d9;
+  --purple-glow: rgba(167, 139, 250, 0.12);
 
   --font-display: 'Syne', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
@@ -610,3 +613,112 @@ body::before {
 .results-enter > *:nth-child(1) { animation-delay: 0.05s; }
 .results-enter > *:nth-child(2) { animation-delay: 0.1s; }
 .results-enter > *:nth-child(3) { animation-delay: 0.15s; }
+
+/* ─── Tab Badge ────────────────────────────────────────────────────────────── */
+.tab-badge-new {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #000;
+  background: var(--green);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  margin-left: 0.4rem;
+  letter-spacing: 0.06em;
+  vertical-align: super;
+}
+
+/* ─── Select (dropdown) ────────────────────────────────────────────────────── */
+.field select {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  padding: 0.6rem 0.75rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+}
+
+.field select:focus {
+  border-color: var(--green-dim);
+  box-shadow: 0 0 0 3px var(--green-glow);
+}
+
+/* ─── LOHAS Signal Cards ──────────────────────────────────────────────────── */
+.lohas-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.lohas-signal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  text-align: center;
+}
+
+.lohas-signal-card .signal-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.lohas-signal-card .signal-value {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.lohas-signal-card .signal-hint {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+/* ─── LOHAS Insight Box ───────────────────────────────────────────────────── */
+.lohas-insight {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+/* ─── LOHAS Line Values (right-side labels) ───────────────────────────────── */
+.lohas-line-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.lohas-line-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.lohas-line-tag .tag-dot {
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+}
