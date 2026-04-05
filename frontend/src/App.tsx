@@ -5,6 +5,8 @@ import ResultSummary from './components/ResultSummary'
 import ResultChart from './components/ResultChart'
 import PriceLookup from './components/PriceLookup'
 import LOHASAnalysis from './components/LOHASAnalysis'
+import AdSlot from './components/AdSlot'
+import Disclaimer from './components/Disclaimer'
 
 type Tab = 'backtest' | 'lohas' | 'prices'
 type Theme = 'dark' | 'light'
@@ -28,6 +30,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BacktestResponse | null>(null)
+  const [disclaimerOpen, setDisclaimerOpen] = useState(false)
   const { theme, toggle: toggleTheme } = useTheme()
 
   const handleSubmit = async (params: BacktestParams) => {
@@ -149,6 +152,9 @@ export default function App() {
               <ResultSummary data={result} />
               <ResultChart data={result.chartData} ticker={result.metadata.ticker} />
 
+              {/* In-content Ad Slot (after results) */}
+              <AdSlot slot="2222222222" format="fluid" layout="in-article" className="ad-slot-inline" />
+
               <p className="disclaimer">
                 &#9888; 本工具資料來源為 Yahoo Finance，使用調整後收盤價（adjClose）計算，
                 已反映股息再投入及股票分割。回測結果僅供參考，過去績效不代表未來表現，
@@ -165,11 +171,25 @@ export default function App() {
       {/* Price Lookup Tab */}
       {tab === 'prices' && <PriceLookup />}
 
+      {/* Bottom Ad Slot (above footer) */}
+      <AdSlot slot="1111111111" format="horizontal" className="ad-slot-bottom" />
+
       {/* Footer */}
       <footer className="footer">
         <div className="footer-brand">Stock<span>Pilot</span></div>
-        <div className="footer-copy">&#169; 2026 StockPilot — 真實數據驅動的投資分析工具</div>
+        <div className="footer-links">
+          <button className="footer-link" onClick={() => setDisclaimerOpen(true)}>
+            免責聲明
+          </button>
+          <span className="footer-sep">·</span>
+          <a className="footer-link" href="mailto:contact@stockpilot.example">聯絡我們</a>
+        </div>
+        <div className="footer-copy">
+          &#169; 2026 StockPilot — 真實數據驅動的投資分析工具 · 本站內容僅供參考，不構成投資建議
+        </div>
       </footer>
+
+      <Disclaimer open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
     </div>
   )
 }

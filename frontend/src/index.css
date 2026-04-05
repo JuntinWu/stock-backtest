@@ -1027,6 +1027,172 @@ body::after {
   border-radius: 1px;
 }
 
+/* ─── Ad Slots ──────────────────────────────────────────────────────────── */
+.ad-slot {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem;
+  margin: 1.5rem 0;
+  min-height: 100px;
+  overflow: hidden;
+}
+
+.ad-slot .ad-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.ad-slot ins.adsbygoogle {
+  min-height: 90px;
+}
+
+.ad-slot-top { margin-top: 0; }
+.ad-slot-inline { margin: 2rem 0; }
+.ad-slot-bottom { margin: 2.5rem 0 1rem; }
+
+/* ─── Footer links ──────────────────────────────────────────────────────── */
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.4rem;
+  font-size: 0.72rem;
+}
+
+.footer-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm, 6px);
+  text-decoration: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.footer-link:hover {
+  color: var(--green);
+  background: var(--bg-hover);
+}
+
+.footer-sep {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* ─── Modal (Disclaimer) ────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.18s ease;
+}
+
+.modal-panel {
+  background: var(--bg-card-solid, var(--bg-card));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.22s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+
+.modal-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  overflow-y: auto;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+
+.modal-body section {
+  margin-bottom: 1.25rem;
+}
+
+.modal-body h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.modal-body p {
+  margin: 0;
+}
+
+.modal-body strong {
+  color: var(--text-primary);
+}
+
+.modal-body a {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.modal-footer-note {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
 /* ─── Responsive ───────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .app { padding: 1.25rem 1rem 3rem; }
