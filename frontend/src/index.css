@@ -380,36 +380,53 @@ body::after {
 }
 
 /* ─── Tabs ──────────────────────────────────────────────────────────────── */
-.tab-bar {
+.tab-bar-wrap {
   display: flex;
-  gap: 0.25rem;
+  justify-content: center;
   margin-bottom: 2rem;
-  border-bottom: 1px solid var(--border);
+}
+
+.tab-bar {
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
 }
 
 .tab-btn {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  background: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-muted);
-  padding: 0.65rem 1.25rem;
+  color: var(--text-secondary);
+  padding: 0.7rem 1.4rem;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
-  border-radius: 6px 6px 0 0;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .tab-btn:hover {
-  color: var(--text-secondary);
+  color: var(--text-primary);
   background: var(--bg-hover);
 }
 
 .tab-btn.active {
-  color: var(--green);
-  border-bottom-color: var(--green);
+  background: var(--green);
+  color: #000;
+  box-shadow: 0 4px 16px rgba(0, 208, 132, 0.35);
+}
+
+.tab-btn .tab-icon {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 /* ─── Form ───────────────────────────────────────────────────────────────── */
@@ -935,15 +952,21 @@ body::after {
 
 /* ─── Tab Badge ────────────────────────────────────────────────────────── */
 .tab-badge-new {
-  font-size: 0.58rem;
+  font-size: 0.55rem;
   font-weight: 700;
   color: #000;
   background: var(--green);
-  padding: 0.1rem 0.35rem;
+  padding: 0.12rem 0.4rem;
   border-radius: 3px;
-  margin-left: 0.4rem;
-  letter-spacing: 0.06em;
+  margin-left: 0.35rem;
+  letter-spacing: 0.08em;
   vertical-align: super;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active .tab-badge-new {
+  background: #000;
+  color: var(--green);
 }
 
 /* ─── LOHAS Signal Cards ──────────────────────────────────────────────── */
@@ -1201,5 +1224,8 @@ body::after {
   .hero-stats { gap: 1.25rem; flex-wrap: wrap; }
   .theme-toggle { top: 0.75rem; right: 0.75rem; }
   .cards-grid { grid-template-columns: 1fr; }
-  .tab-btn { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+  .tab-bar { width: 100%; display: flex; gap: 0.25rem; padding: 0.3rem; }
+  .tab-btn { flex: 1; justify-content: center; padding: 0.6rem 0.4rem; font-size: 0.72rem; gap: 0.3rem; }
+  .tab-btn .tab-icon { font-size: 0.9rem; }
+  .tab-badge-new { font-size: 0.48rem; padding: 0.08rem 0.28rem; margin-left: 0.2rem; }
 }

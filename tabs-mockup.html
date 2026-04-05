@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StockPilot — Tab Design Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #060a0f;
+    --bg-secondary: #0b1018;
+    --bg-card: rgba(14, 20, 30, 0.65);
+    --bg-card-solid: #0e141e;
+    --bg-hover: rgba(255,255,255,0.04);
+    --border: rgba(40, 60, 85, 0.5);
+    --border-bright: rgba(55, 80, 110, 0.6);
+    --text-primary: #e8f0f8;
+    --text-secondary: #6e8ca8;
+    --text-muted: #3d5268;
+    --green: #00d084;
+    --green-dim: #00903b;
+    --green-glow: rgba(0, 208, 132, 0.12);
+    --blue: #38bdf8;
+    --blue-glow: rgba(56, 189, 248, 0.12);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167, 139, 250, 0.12);
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+    --radius: 8px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    font-family: var(--font-mono);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 2rem 1.5rem 4rem;
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(0,208,132,0.05) 0%, transparent 40%),
+      radial-gradient(circle at 80% 60%, rgba(56,189,248,0.04) 0%, transparent 40%);
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+  h1 span { color: var(--green); }
+
+  .lead {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 3rem;
+  }
+
+  .mockup {
+    margin-bottom: 3.5rem;
+    padding: 1.75rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(16px) saturate(1.4);
+  }
+
+  .mockup-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .mockup-label h2 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .mockup-label .tag {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .tag-rec { background: var(--green); color: #000; }
+  .tag-bold { background: var(--purple); color: #000; }
+  .tag-card { background: var(--blue); color: #000; }
+  .tag-pill { background: var(--text-secondary); color: #000; }
+  .tag-seg { background: #f59e0b; color: #000; }
+
+  .mockup-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════ */
+  /*  CURRENT (baseline) */
+  /* ═══════════════════════════════════════════════════════════════ */
+  .tabs-current {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tabs-current .tab {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+  }
+  .tabs-current .tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+  /* ═══════════════════════════════════════════════════════════════ */
+  /*  OPTION 1: Bold Pill (Segmented Pills) */
+  /* ═══════════════════════════════════════════════════════════════ */
+  .tabs-pill {
+    display: inline-flex;
+    gap: 0.35rem;
+    padding: 0.4rem;
+    background: var(--bg-card-solid);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+  .tabs-pill .tab {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.7rem 1.4rem;
+    cursor: pointer;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+  .tabs-pill .tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+  .tabs-pill .tab.active {
+    background: var(--green);
+    color: #000;
+    box-shadow: 0 4px 16px rgba(0,208,132,0.35);
+  }
+  .tabs-pill .tab .icon { font-size: 1rem; }
+  .tabs-pill .tab.active .badge-new { background: #000; color: var(--green); }
+
+  /* ═══════════════════════════════════════════════════════════════ */
+  /*  OPTION 2: Card Tabs (Big Cards with Icons) */
+  /* ═══════════════════════════════════════════════════════════════ */
+  .tabs-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .tabs-card .tab {
+    font-family: var(--font-mono);
+    background: var(--bg-card-solid);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 1.1rem 1.25rem;
+    cursor: pointer;
+    border-radius: 12px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tabs-card .tab:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+    color: var(--text-primary);
+  }
+  .tabs-card .tab.active {
+    border-color: var(--green);
+    background: linear-gradient(135deg, var(--green-glow) 0%, transparent 60%), var(--bg-card-solid);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 1px var(--green), 0 8px 24px rgba(0,208,132,0.15);
+  }
+  .tabs-card .tab .card-icon {
+    font-size: 1.4rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .tabs-card .tab.active .card-icon { background: var(--green-glow); }
+  .tabs-card .tab .card-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .tabs-card .tab .card-title { font-size: 0.88rem; font-weight: 600; letter-spacing: 0.02em; }
+  .tabs-card .tab .card-sub { font-size: 0.62rem; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  /* ═══════════════════════════════════════════════════════════════ */
+  /*  OPTION 3: Underline XL (Bold Underline + Large Text) */
+  /* ═══════════════════════════════════════════════════════════════ */
+  .tabs-xl {
+    display: flex;
+    gap: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .tabs-xl .tab {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.9rem 0;
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    transition: color 0.2s;
+  }
+  .tabs-xl .tab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--green);
+    border-radius: 3px 3px 0 0;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+  }
+  .tabs-xl .tab:hover { color: var(--text-secondary); }
+  .tabs-xl .tab.active { color: var(--text-primary); }
+  .tabs-xl .tab.active::after { transform: scaleX(1); }
+  .tabs-xl .tab .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+  .tabs-xl .tab.active .dot { background: var(--green); box-shadow: 0 0 12px var(--green); }
+
+  /* ═══════════════════════════════════════════════════════════════ */
+  /*  OPTION 4: Segmented Bar (macOS style) */
+  /* ═══════════════════════════════════════════════════════════════ */
+  .tabs-seg {
+    display: flex;
+    background: var(--bg-card-solid);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .tabs-seg .tab {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 0.95rem 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .tabs-seg .tab:last-child { border-right: none; }
+  .tabs-seg .tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+  .tabs-seg .tab.active {
+    color: var(--green);
+    background: var(--green-glow);
+  }
+  .tabs-seg .tab.active::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--green);
+  }
+  .tabs-seg .tab .icon { font-size: 0.95rem; }
+
+  /* ═══════════════════════════════════════════════════════════════ */
+  /*  OPTION 5: Hero Tabs (Largest, Icon Stack) */
+  /* ═══════════════════════════════════════════════════════════════ */
+  .tabs-hero {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .tabs-hero .tab {
+    font-family: var(--font-mono);
+    background: var(--bg-card-solid);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 1.5rem 1.25rem;
+    cursor: pointer;
+    border-radius: 14px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .tabs-hero .tab::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--green-glow) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .tabs-hero .tab > * { position: relative; z-index: 1; }
+  .tabs-hero .tab:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-3px);
+    color: var(--text-primary);
+  }
+  .tabs-hero .tab:hover::before { opacity: 0.5; }
+  .tabs-hero .tab.active {
+    border-color: var(--green);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 1px var(--green), 0 12px 32px rgba(0,208,132,0.2);
+  }
+  .tabs-hero .tab.active::before { opacity: 1; }
+  .tabs-hero .tab .hero-icon {
+    font-size: 1.75rem;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+  }
+  .tabs-hero .tab.active .hero-icon { background: var(--green-glow); }
+  .tabs-hero .tab .hero-title { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em; }
+  .tabs-hero .tab .hero-sub { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  /* NEW badges */
+  .badge-new {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #000;
+    background: var(--green);
+    padding: 0.12rem 0.4rem;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    margin-left: 0.35rem;
+    vertical-align: super;
+  }
+  .badge-new-inline {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #000;
+    background: var(--green);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .tabs-card, .tabs-hero { grid-template-columns: 1fr; }
+    .tabs-pill { display: flex; width: 100%; }
+    .tabs-pill .tab { flex: 1; justify-content: center; padding: 0.65rem 0.5rem; font-size: 0.75rem; }
+    .tabs-xl { gap: 1.25rem; overflow-x: auto; }
+    .tabs-xl .tab { font-size: 0.9rem; white-space: nowrap; }
+    .tabs-seg .tab { padding: 0.7rem 0.4rem; font-size: 0.72rem; }
+    .tabs-seg .tab .icon { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Stock<span>Pilot</span> — Tab 設計方案</h1>
+    <p class="lead">5 種更明顯的 tab 設計方案，點擊可切換 active 狀態查看效果。</p>
+
+    <!-- Current baseline -->
+    <div class="mockup">
+      <div class="mockup-label">
+        <h2>現況 (Current)</h2>
+        <span class="tag" style="background:#334155;color:#94a3b8;">baseline</span>
+      </div>
+      <div class="tabs-current">
+        <button class="tab active">回測分析</button>
+        <button class="tab">樂活五線譜<span class="badge-new">NEW</span></button>
+        <button class="tab">歷史價格查詢</button>
+      </div>
+      <div class="mockup-note">目前設計：純文字 + 底部細線，低調但不夠搶眼，使用者容易忽略切換功能。</div>
+    </div>
+
+    <!-- Option 1 -->
+    <div class="mockup">
+      <div class="mockup-label">
+        <h2>方案 1：Segmented Pill（分段藥丸）</h2>
+        <span class="tag tag-rec">推薦 ⭐</span>
+      </div>
+      <div class="tabs-pill">
+        <button class="tab active" onclick="setActive(this)"><span class="icon">📊</span>回測分析</button>
+        <button class="tab" onclick="setActive(this)"><span class="icon">🎵</span>樂活五線譜<span class="badge-new">NEW</span></button>
+        <button class="tab" onclick="setActive(this)"><span class="icon">🔍</span>歷史價格查詢</button>
+      </div>
+      <div class="mockup-note">✅ 現代感強、視覺聚焦、空間緊湊。Active 狀態使用品牌綠 + 陰影，對比清晰。適合需要頻繁切換的場景。</div>
+    </div>
+
+    <!-- Option 2 -->
+    <div class="mockup">
+      <div class="mockup-label">
+        <h2>方案 2：Card Tabs（卡片式）</h2>
+        <span class="tag tag-card">資訊最豐富</span>
+      </div>
+      <div class="tabs-card">
+        <button class="tab active" onclick="setActive(this)">
+          <div class="card-icon">📊</div>
+          <div class="card-text">
+            <div class="card-title">回測分析</div>
+            <div class="card-sub">DCA · All-in · XIRR</div>
+          </div>
+        </button>
+        <button class="tab" onclick="setActive(this)">
+          <div class="card-icon">🎵</div>
+          <div class="card-text">
+            <div class="card-title">樂活五線譜</div>
+            <div class="card-sub">買賣訊號</div>
+          </div>
+          <span class="badge-new-inline">NEW</span>
+        </button>
+        <button class="tab" onclick="setActive(this)">
+          <div class="card-icon">🔍</div>
+          <div class="card-text">
+            <div class="card-title">歷史價格</div>
+            <div class="card-sub">Yahoo Finance</div>
+          </div>
+        </button>
+      </div>
+      <div class="mockup-note">✅ 每個 tab 都有子標題說明功能，使用者一眼看懂。佔用空間較大，適合桌機首屏當導覽入口。</div>
+    </div>
+
+    <!-- Option 3 -->
+    <div class="mockup">
+      <div class="mockup-label">
+        <h2>方案 3：Underline XL（大字底線）</h2>
+        <span class="tag tag-bold">簡潔有力</span>
+      </div>
+      <div class="tabs-xl">
+        <button class="tab active" onclick="setActive(this)"><span class="dot"></span>回測分析</button>
+        <button class="tab" onclick="setActive(this)"><span class="dot"></span>樂活五線譜<span class="badge-new">NEW</span></button>
+        <button class="tab" onclick="setActive(this)"><span class="dot"></span>歷史價格查詢</button>
+      </div>
+      <div class="mockup-note">✅ 保留目前底線風格，但字體改用 display font 放大加粗，加上狀態點。保持簡潔的同時大幅提升存在感。</div>
+    </div>
+
+    <!-- Option 4 -->
+    <div class="mockup">
+      <div class="mockup-label">
+        <h2>方案 4：Segmented Bar（整條分段）</h2>
+        <span class="tag tag-seg">均分寬度</span>
+      </div>
+      <div class="tabs-seg">
+        <button class="tab active" onclick="setActive(this)"><span class="icon">📊</span>回測分析</button>
+        <button class="tab" onclick="setActive(this)"><span class="icon">🎵</span>樂活五線譜<span class="badge-new">NEW</span></button>
+        <button class="tab" onclick="setActive(this)"><span class="icon">🔍</span>歷史價格查詢</button>
+      </div>
+      <div class="mockup-note">✅ 滿版分段式，active 有頂部色條 + 背景高亮。結構感強、均衡分布，類似控制面板風格。</div>
+    </div>
+
+    <!-- Option 5 -->
+    <div class="mockup">
+      <div class="mockup-label">
+        <h2>方案 5：Hero Tabs（超大英雄式）</h2>
+        <span class="tag tag-pill">視覺最強</span>
+      </div>
+      <div class="tabs-hero">
+        <button class="tab active" onclick="setActive(this)">
+          <div class="hero-icon">📊</div>
+          <div class="hero-title">回測分析</div>
+          <div class="hero-sub">Backtest</div>
+        </button>
+        <button class="tab" onclick="setActive(this)">
+          <div class="hero-icon">🎵</div>
+          <div class="hero-title">樂活五線譜</div>
+          <div class="hero-sub">LOHAS Signals</div>
+          <span class="badge-new-inline">NEW</span>
+        </button>
+        <button class="tab" onclick="setActive(this)">
+          <div class="hero-icon">🔍</div>
+          <div class="hero-title">歷史價格查詢</div>
+          <div class="hero-sub">Price Lookup</div>
+        </button>
+      </div>
+      <div class="mockup-note">✅ 最大最顯眼、放射狀光暈、hover 位移動畫。適合當首屏主 CTA，取代 hero 下方一排功能 pill。</div>
+    </div>
+
+    <p style="color:var(--text-muted);font-size:0.78rem;text-align:center;margin-top:2rem;">
+      💡 點擊任一方案中的 tab 可切換 active 狀態 · 縮小視窗可查看 mobile 佈局
+    </p>
+  </div>
+
+  <script>
+    function setActive(btn) {
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>

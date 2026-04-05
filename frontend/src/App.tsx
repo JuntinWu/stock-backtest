@@ -11,22 +11,71 @@ import Disclaimer from './components/Disclaimer'
 type Tab = 'backtest' | 'lohas' | 'prices'
 type Theme = 'dark' | 'light'
 
+const VALID_TABS: Tab[] = ['backtest', 'lohas', 'prices']
+
+function getTabFromHash(): Tab {
+  const hash = window.location.hash.replace('#', '') as Tab
+  return VALID_TABS.includes(hash) ? hash : 'backtest'
+}
+
+function useHashTab(): [Tab, (t: Tab) => void] {
+  const [tab, setTabState] = useState<Tab>(() => getTabFromHash())
+
+  useEffect(() => {
+    const onHashChange = () => setTabState(getTabFromHash())
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  const setTab = (t: Tab) => {
+    if (t === tab) return
+    // default tab uses clean URL (no hash), others use #tabname
+    if (t === 'backtest') {
+      history.pushState(null, '', window.location.pathname + window.location.search)
+    } else {
+      history.pushState(null, '', `#${t}`)
+    }
+    setTabState(t)
+  }
+
+  return [tab, setTab]
+}
+
 function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
     return (document.documentElement.getAttribute('data-theme') as Theme) || 'dark'
   })
+  const [userOverride, setUserOverride] = useState<boolean>(() => {
+    const stored = localStorage.getItem('theme')
+    return stored === 'light' || stored === 'dark'
+  })
 
+  // Apply theme to DOM; only persist when user has explicitly overridden
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
+    if (userOverride) {
+      localStorage.setItem('theme', theme)
+    }
+  }, [theme, userOverride])
 
-  const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  // Follow system preference changes unless user has overridden
+  useEffect(() => {
+    if (userOverride) return
+    const mq = window.matchMedia('(prefers-color-scheme: light)')
+    const onChange = (e: MediaQueryListEvent) => setTheme(e.matches ? 'light' : 'dark')
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [userOverride])
+
+  const toggle = () => {
+    setUserOverride(true)
+    setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+  }
   return { theme, toggle }
 }
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>('backtest')
+  const [tab, setTab] = useHashTab()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BacktestResponse | null>(null)
@@ -106,26 +155,28 @@ export default function App() {
       </section>
 
       {/* Tabs */}
-      <div className="tab-bar">
-        <button
-          className={`tab-btn ${tab === 'backtest' ? 'active' : ''}`}
-          onClick={() => setTab('backtest')}
-        >
-          回測分析
-        </button>
-        <button
-          className={`tab-btn ${tab === 'lohas' ? 'active' : ''}`}
-          onClick={() => setTab('lohas')}
-        >
-          樂活五線譜
-          <span className="tab-badge-new">NEW</span>
-        </button>
-        <button
-          className={`tab-btn ${tab === 'prices' ? 'active' : ''}`}
-          onClick={() => setTab('prices')}
-        >
-          歷史價格查詢
-        </button>
+      <div className="tab-bar-wrap">
+        <div className="tab-bar">
+          <button
+            className={`tab-btn ${tab === 'backtest' ? 'active' : ''}`}
+            onClick={() => setTab('backtest')}
+          >
+            <span className="tab-icon">&#128202;</span>回測分析
+          </button>
+          <button
+            className={`tab-btn ${tab === 'lohas' ? 'active' : ''}`}
+            onClick={() => setTab('lohas')}
+          >
+            <span className="tab-icon">&#127925;</span>樂活五線譜
+            <span className="tab-badge-new">NEW</span>
+          </button>
+          <button
+            className={`tab-btn ${tab === 'prices' ? 'active' : ''}`}
+            onClick={() => setTab('prices')}
+          >
+            <span className="tab-icon">&#128269;</span>歷史價格查詢
+          </button>
+        </div>
       </div>
 
       {/* Backtest Tab */}
