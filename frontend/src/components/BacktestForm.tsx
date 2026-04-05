@@ -16,9 +16,9 @@ const PRESETS = [
 ]
 
 export default function BacktestForm({ onSubmit, loading }: Props) {
-  const [ticker, setTicker] = useState('0050.TW')
+  const [ticker, setTicker] = useState('2330.TW')
   const [monthlyAmount, setMonthlyAmount] = useState('10000')
-  const [startYear, setStartYear] = useState('2003')
+  const [startYear, setStartYear] = useState('2006')
   const [endYear, setEndYear] = useState(String(currentYear))
 
   const handleSubmit = () => {
