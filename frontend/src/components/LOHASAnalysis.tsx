@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   LineChart,
   Line,
@@ -97,11 +97,24 @@ export default function LOHASAnalysis() {
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<LohasResponse | null>(null)
 
-  // Theme-aware close line color
+  // Track theme changes so close line color updates on dark/light switch
+  const [closeColor, setCloseColor] = useState(() => getCloseColor())
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setCloseColor(getCloseColor())
+    })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
+    return () => observer.disconnect()
+  }, [])
+
   const LINE_COLORS = useMemo(() => ({
     ...LINE_COLORS_BASE,
-    close: getCloseColor(),
-  }), [data]) // re-compute when data changes (captures theme at render time)
+    close: closeColor,
+  }), [closeColor])
 
   const applyPreset = (p: typeof PRESETS[0]) => {
     setTicker(p.ticker)
