@@ -1,228 +1,182 @@
 const { fetchHistory } = require('./_lib/yahoo');
 const { computeLohas } = require('./_lib/lohas');
-const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
+const { Resvg } = require('@resvg/resvg-js');
 
 // ─── Chart Configuration ──────────────────────────────────────────────────────
 const WIDTH = 1080;
 const HEIGHT = 620;
+const PADDING = { top: 100, right: 90, bottom: 50, left: 70 };
+const CHART_W = WIDTH - PADDING.left - PADDING.right;
+const CHART_H = HEIGHT - PADDING.top - PADDING.bottom;
 
-const LINE_COLORS = {
-  plus2s: '#f43f5e',
-  plus1s: '#f4a0ab',
-  trend:  '#8b949e',
-  minus1s:'#79c0ff',
-  minus2s:'#388bfd',
-  close:  '#1a1a2e',
-};
+const LINES = [
+  { key: 'plus2s',  color: '#f43f5e', label: '樂觀線（+2σ）',   dash: '6,3' },
+  { key: 'plus1s',  color: '#f4a0ab', label: '相對樂觀（+1σ）', dash: '' },
+  { key: 'trend',   color: '#8b949e', label: '趨勢線',           dash: '4,4' },
+  { key: 'minus1s', color: '#79c0ff', label: '相對悲觀（-1σ）', dash: '' },
+  { key: 'minus2s', color: '#388bfd', label: '悲觀線（-2σ）',   dash: '' },
+  { key: 'close',   color: '#1a1a2e', label: '收盤價',           dash: '' },
+];
 
-const LINE_LABELS = {
-  plus2s: '樂觀線（+2σ）',
-  plus1s: '相對樂觀（+1σ）',
-  trend:  '趨勢線',
-  minus1s:'相對悲觀（-1σ）',
-  minus2s:'悲觀線（-2σ）',
-  close:  '收盤價',
-};
+// ─── SVG helpers ──────────────────────────────────────────────────────────────
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
-// ─── Render PNG ───────────────────────────────────────────────────────────────
-async function renderPNG(ticker, data, periodYears, sigmaMult) {
-  const chartJSNodeCanvas = new ChartJSNodeCanvas({
-    width: WIDTH,
-    height: HEIGHT,
-    backgroundColour: '#ffffff',
+function niceScale(min, max, maxTicks = 8) {
+  const range = max - min || 1;
+  const roughStep = range / maxTicks;
+  const mag = Math.pow(10, Math.floor(Math.log10(roughStep)));
+  const residual = roughStep / mag;
+  let step;
+  if (residual <= 1.5) step = 1 * mag;
+  else if (residual <= 3) step = 2 * mag;
+  else if (residual <= 7) step = 5 * mag;
+  else step = 10 * mag;
+  const niceMin = Math.floor(min / step) * step;
+  const niceMax = Math.ceil(max / step) * step;
+  const ticks = [];
+  for (let v = niceMin; v <= niceMax + step * 0.01; v += step) {
+    ticks.push(Math.round(v * 100) / 100);
+  }
+  return { min: niceMin, max: niceMax, ticks };
+}
+
+function buildPolyline(chartData, key, yMin, yMax) {
+  const points = [];
+  const n = chartData.length;
+  for (let i = 0; i < n; i++) {
+    const x = PADDING.left + (i / (n - 1)) * CHART_W;
+    const yFrac = (chartData[i][key] - yMin) / (yMax - yMin);
+    const y = PADDING.top + CHART_H - yFrac * CHART_H;
+    points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+  }
+  return points.join(' ');
+}
+
+// ─── Render SVG ───────────────────────────────────────────────────────────────
+function renderSVG(ticker, data, periodYears) {
+  const chartData = data.chartData;
+  const last = chartData[chartData.length - 1];
+
+  // Compute Y range across all values
+  let yMin = Infinity, yMax = -Infinity;
+  for (const d of chartData) {
+    for (const key of ['plus2s', 'plus1s', 'trend', 'minus1s', 'minus2s', 'close']) {
+      if (d[key] < yMin) yMin = d[key];
+      if (d[key] > yMax) yMax = d[key];
+    }
+  }
+  const yPad = (yMax - yMin) * 0.05;
+  const scale = niceScale(yMin - yPad, yMax + yPad);
+
+  // X-axis labels (show ~6 evenly spaced years)
+  const tickInterval = Math.max(1, Math.floor(chartData.length / 6));
+  const xLabels = [];
+  for (let i = 0; i < chartData.length; i += tickInterval) {
+    const d = new Date(chartData[i].date);
+    const x = PADDING.left + (i / (chartData.length - 1)) * CHART_W;
+    xLabels.push({ x, label: `${d.getFullYear()}` });
+  }
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
+<defs>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&amp;display=swap');
+    text { font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', 'Helvetica Neue', Arial, sans-serif; }
+  </style>
+</defs>
+<rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff" rx="16"/>
+`;
+
+  // Title
+  svg += `<text x="${PADDING.left}" y="36" font-size="20" font-weight="700" fill="#1a1a2e">${esc(`樂活五線譜 — ${ticker}`)}</text>\n`;
+  svg += `<text x="${PADDING.left}" y="56" font-size="12" fill="#888">${esc(`對數線性迴歸 ± 標準差波段｜使用調整後收盤價｜期間 ${periodYears} 年`)}</text>\n`;
+
+  // Legend (top row of colored pills with values)
+  const pillY = 72;
+  let pillX = 140;
+  for (const line of LINES) {
+    const val = last[line.key].toFixed(2);
+    const isClose = line.key === 'close';
+    const displayText = isClose ? `● ${val}` : `— ${val}`;
+    const textW = displayText.length * 8 + 16;
+    // Pill background
+    svg += `<rect x="${pillX}" y="${pillY}" width="${textW}" height="22" rx="6" fill="${isClose ? '#f0f0f5' : '#fff'}" stroke="${line.color}" stroke-width="1.5"/>`;
+    svg += `<text x="${pillX + textW / 2}" y="${pillY + 15}" text-anchor="middle" font-size="11" font-weight="600" fill="${line.color}">${esc(displayText)}</text>\n`;
+    pillX += textW + 10;
+  }
+
+  // Y-axis grid lines and labels
+  for (const tick of scale.ticks) {
+    const yFrac = (tick - scale.min) / (scale.max - scale.min);
+    const y = PADDING.top + CHART_H - yFrac * CHART_H;
+    svg += `<line x1="${PADDING.left}" y1="${y}" x2="${PADDING.left + CHART_W}" y2="${y}" stroke="#e8e8e8" stroke-width="1"/>\n`;
+    svg += `<text x="${PADDING.left - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#666">${tick.toFixed(2)}</text>\n`;
+  }
+
+  // X-axis labels
+  for (const { x, label } of xLabels) {
+    svg += `<text x="${x}" y="${PADDING.top + CHART_H + 20}" text-anchor="middle" font-size="11" fill="#666">${esc(label)}</text>\n`;
+  }
+
+  // Chart border (bottom and left)
+  svg += `<line x1="${PADDING.left}" y1="${PADDING.top + CHART_H}" x2="${PADDING.left + CHART_W}" y2="${PADDING.top + CHART_H}" stroke="#ccc" stroke-width="1"/>\n`;
+
+  // Draw lines
+  for (const line of LINES) {
+    const points = buildPolyline(chartData, line.key, scale.min, scale.max);
+    const dashAttr = line.dash ? ` stroke-dasharray="${line.dash}"` : '';
+    const width = line.key === 'trend' ? 2 : 1.5;
+    svg += `<polyline points="${points}" fill="none" stroke="${line.color}" stroke-width="${width}"${dashAttr} stroke-linejoin="round" stroke-linecap="round"/>\n`;
+  }
+
+  // Right-side value labels
+  for (const line of LINES) {
+    const val = last[line.key];
+    const yFrac = (val - scale.min) / (scale.max - scale.min);
+    const y = PADDING.top + CHART_H - yFrac * CHART_H;
+    const text = val.toFixed(2);
+    const isClose = line.key === 'close';
+    const textW = text.length * 7 + (isClose ? 20 : 12);
+    const labelX = PADDING.left + CHART_W + 6;
+
+    svg += `<rect x="${labelX}" y="${y - 10}" width="${textW}" height="20" rx="4" fill="${line.color}"/>`;
+    if (isClose) {
+      svg += `<text x="${labelX + textW / 2}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">● ${esc(text)}</text>\n`;
+    } else {
+      svg += `<text x="${labelX + textW / 2}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">${esc(text)}</text>\n`;
+    }
+  }
+
+  // Legend row at top-right
+  let legendX = PADDING.left + CHART_W - 20;
+  const legendY = 36;
+  for (let i = LINES.length - 1; i >= 0; i--) {
+    const line = LINES[i];
+    const labelW = line.label.length * 12 + 24;
+    legendX -= labelW;
+    const dashAttr = line.dash ? ` stroke-dasharray="${line.dash}"` : '';
+    svg += `<line x1="${legendX}" y1="${legendY}" x2="${legendX + 16}" y2="${legendY}" stroke="${line.color}" stroke-width="2"${dashAttr}/>\n`;
+    svg += `<text x="${legendX + 20}" y="${legendY + 4}" font-size="11" fill="#555">${esc(line.label)}</text>\n`;
+  }
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// ─── Render PNG from SVG ──────────────────────────────────────────────────────
+function renderPNG(svgString) {
+  const resvg = new Resvg(svgString, {
+    fitTo: { mode: 'width', value: WIDTH * 2 }, // 2x for retina
+    font: {
+      loadSystemFonts: true,
+    },
   });
-
-  const labels = data.chartData.map(d => d.date);
-  const last = data.chartData[data.chartData.length - 1];
-
-  // Show ~6 x-axis labels
-  const tickInterval = Math.max(1, Math.floor(labels.length / 6));
-
-  const configuration = {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: LINE_LABELS.plus2s,
-          data: data.chartData.map(d => d.plus2s),
-          borderColor: LINE_COLORS.plus2s,
-          borderWidth: 1.5,
-          borderDash: [6, 3],
-          pointRadius: 0,
-          fill: false,
-        },
-        {
-          label: LINE_LABELS.plus1s,
-          data: data.chartData.map(d => d.plus1s),
-          borderColor: LINE_COLORS.plus1s,
-          borderWidth: 1.5,
-          pointRadius: 0,
-          fill: false,
-        },
-        {
-          label: LINE_LABELS.trend,
-          data: data.chartData.map(d => d.trend),
-          borderColor: LINE_COLORS.trend,
-          borderWidth: 2,
-          borderDash: [4, 4],
-          pointRadius: 0,
-          fill: false,
-        },
-        {
-          label: LINE_LABELS.minus1s,
-          data: data.chartData.map(d => d.minus1s),
-          borderColor: LINE_COLORS.minus1s,
-          borderWidth: 1.5,
-          pointRadius: 0,
-          fill: false,
-        },
-        {
-          label: LINE_LABELS.minus2s,
-          data: data.chartData.map(d => d.minus2s),
-          borderColor: LINE_COLORS.minus2s,
-          borderWidth: 1.5,
-          pointRadius: 0,
-          fill: false,
-        },
-        {
-          label: LINE_LABELS.close,
-          data: data.chartData.map(d => d.close),
-          borderColor: LINE_COLORS.close,
-          borderWidth: 1.5,
-          pointRadius: 0,
-          fill: false,
-        },
-      ],
-    },
-    options: {
-      responsive: false,
-      animation: false,
-      layout: {
-        padding: { top: 80, right: 70, bottom: 10, left: 10 },
-      },
-      scales: {
-        x: {
-          ticks: {
-            callback: function (val, idx) {
-              if (idx % tickInterval !== 0) return '';
-              const label = labels[idx];
-              if (!label) return '';
-              // Show year only or year-month
-              const d = new Date(label);
-              return `${d.getFullYear()}`;
-            },
-            maxRotation: 0,
-            color: '#666',
-            font: { size: 12 },
-          },
-          grid: { display: false },
-        },
-        y: {
-          position: 'left',
-          ticks: {
-            color: '#666',
-            font: { size: 12 },
-            callback: (v) => v.toFixed(2),
-          },
-          grid: { color: 'rgba(0,0,0,0.06)' },
-        },
-      },
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            usePointStyle: true,
-            pointStyle: 'line',
-            padding: 16,
-            font: { size: 11 },
-          },
-        },
-        title: {
-          display: true,
-          text: `樂活五線譜 — ${ticker}`,
-          font: { size: 18, weight: 'bold' },
-          color: '#1a1a2e',
-          padding: { bottom: 4 },
-        },
-        subtitle: {
-          display: true,
-          text: `對數線性迴歸 ± 標準差波段｜使用調整後收盤價｜期間 ${periodYears} 年`,
-          font: { size: 12 },
-          color: '#888',
-          padding: { bottom: 10 },
-        },
-      },
-    },
-    plugins: [
-      {
-        // Draw line value labels on the right side and current price badge
-        id: 'lineValueLabels',
-        afterDraw(chart) {
-          const ctx = chart.ctx;
-          const chartArea = chart.chartArea;
-
-          // Draw value labels to the right of chart
-          const lineKeys = ['plus2s', 'plus1s', 'trend', 'minus1s', 'minus2s'];
-          const lineLabels = {
-            plus2s: `${last.plus2s.toFixed(2)}`,
-            plus1s: `${last.plus1s.toFixed(2)}`,
-            trend:  `${last.trend.toFixed(2)}`,
-            minus1s:`${last.minus1s.toFixed(2)}`,
-            minus2s:`${last.minus2s.toFixed(2)}`,
-          };
-
-          const yScale = chart.scales.y;
-          ctx.font = 'bold 11px sans-serif';
-          ctx.textAlign = 'left';
-
-          for (const key of lineKeys) {
-            const val = last[key];
-            const y = yScale.getPixelForValue(val);
-            const color = LINE_COLORS[key];
-
-            // Draw colored pill background
-            const text = lineLabels[key];
-            const textWidth = ctx.measureText(text).width;
-            const pillX = chartArea.right + 6;
-            const pillY = y - 8;
-            const pillW = textWidth + 12;
-            const pillH = 18;
-            const radius = 4;
-
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.roundRect(pillX, pillY, pillW, pillH, radius);
-            ctx.fill();
-
-            ctx.fillStyle = '#fff';
-            ctx.fillText(text, pillX + 6, y + 4);
-          }
-
-          // Draw current price badge
-          const priceY = yScale.getPixelForValue(data.currentPrice);
-          ctx.fillStyle = '#1a1a2e';
-          ctx.font = 'bold 12px sans-serif';
-          const priceText = `● ${data.currentPrice.toFixed(2)}`;
-          const ptw = ctx.measureText(priceText).width;
-          // Draw at the right edge
-          ctx.fillStyle = '#1a1a2e';
-          ctx.beginPath();
-          ctx.roundRect(chartArea.right + 6, priceY - 10, ptw + 14, 22, 4);
-          ctx.fill();
-          ctx.fillStyle = '#fff';
-          ctx.fillText(priceText, chartArea.right + 12, priceY + 4);
-        },
-      },
-    ],
-  };
-
-  return chartJSNodeCanvas.renderToBuffer(configuration);
+  const pngData = resvg.render();
+  return pngData.asPng();
 }
 
 // ─── Render HTML ──────────────────────────────────────────────────────────────
-function renderHTML(ticker, data, periodYears, sigmaMult) {
+function renderHTML(ticker, data, periodYears) {
   const last = data.chartData[data.chartData.length - 1];
   const chartDataJSON = JSON.stringify(data.chartData);
 
@@ -231,7 +185,7 @@ function renderHTML(ticker, data, periodYears, sigmaMult) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>樂活五線譜 — ${ticker}</title>
+<title>樂活五線譜 — ${esc(ticker)}</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -252,7 +206,7 @@ function renderHTML(ticker, data, periodYears, sigmaMult) {
 </head>
 <body>
 <div class="card">
-  <h1>樂活五線譜 — ${ticker}</h1>
+  <h1>樂活五線譜 — ${esc(ticker)}</h1>
   <p class="subtitle">對數線性迴歸 ± 標準差波段｜使用調整後收盤價｜期間 ${periodYears} 年</p>
   <div class="line-values">
     <span class="line-tag tag-plus2s">— ${last.plus2s.toFixed(2)}</span>
@@ -329,8 +283,8 @@ module.exports = async function handler(req, res) {
   }
 
   const outputFormat = (format || 'png').toLowerCase();
-  if (!['png', 'html', 'json'].includes(outputFormat)) {
-    return res.status(400).json({ error: 'format 僅支援 png、html、json' });
+  if (!['png', 'svg', 'html', 'json'].includes(outputFormat)) {
+    return res.status(400).json({ error: 'format 僅支援 png、svg、html、json' });
   }
 
   try {
@@ -355,17 +309,25 @@ module.exports = async function handler(req, res) {
     }
 
     if (outputFormat === 'html') {
-      const html = renderHTML(tickerUpper, data, periodYears, sigmaMult);
+      const html = renderHTML(tickerUpper, data, periodYears);
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.send(html);
     }
 
-    // Default: PNG
-    const buffer = await renderPNG(tickerUpper, data, periodYears, sigmaMult);
+    const svgString = renderSVG(tickerUpper, data, periodYears);
+
+    if (outputFormat === 'svg') {
+      res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      return res.send(svgString);
+    }
+
+    // Default: PNG (SVG → PNG via resvg)
+    const pngBuffer = renderPNG(svgString);
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Content-Disposition', `inline; filename="lohas-${tickerUpper}-${periodYears}y.png"`);
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.send(buffer);
+    return res.send(Buffer.from(pngBuffer));
   } catch (err) {
     console.error(err);
     const msg = err.message || '未知錯誤';
