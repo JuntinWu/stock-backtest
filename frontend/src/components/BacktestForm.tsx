@@ -47,34 +47,45 @@ export default function BacktestForm({ onSubmit, loading }: Props) {
 
       {/* Presets */}
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
-        {PRESETS.map((p) => (
-          <button
-            key={p.label}
-            onClick={() => applyPreset(p)}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.72rem',
-              background: 'transparent',
-              border: '1px solid var(--border-bright)',
-              color: 'var(--text-secondary)',
-              padding: '0.3rem 0.7rem',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              letterSpacing: '0.04em',
-              transition: 'color 0.15s, border-color 0.15s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--green)'
-              e.currentTarget.style.borderColor = 'var(--green-dim)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--text-secondary)'
-              e.currentTarget.style.borderColor = 'var(--border-bright)'
-            }}
-          >
-            {p.label}
-          </button>
-        ))}
+        {PRESETS.map((p) => {
+          const isActive =
+            p.ticker === ticker.trim() &&
+            String(p.monthly) === monthlyAmount &&
+            String(p.start) === startYear &&
+            String(p.end) === endYear
+
+          return (
+            <button
+              key={p.label}
+              onClick={() => applyPreset(p)}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.72rem',
+                background: isActive ? 'var(--accent-glow)' : 'transparent',
+                border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border-bright)'}`,
+                color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
+                padding: '0.3rem 0.7rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                letterSpacing: '0.04em',
+                fontWeight: isActive ? '600' : '400',
+                transition: 'color 0.15s, border-color 0.15s, background 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                if (isActive) return
+                e.currentTarget.style.color = 'var(--accent)'
+                e.currentTarget.style.borderColor = 'var(--accent-dim)'
+              }}
+              onMouseLeave={(e) => {
+                if (isActive) return
+                e.currentTarget.style.color = 'var(--text-secondary)'
+                e.currentTarget.style.borderColor = 'var(--border-bright)'
+              }}
+            >
+              {p.label}
+            </button>
+          )
+        })}
       </div>
 
       <div className="form-grid">

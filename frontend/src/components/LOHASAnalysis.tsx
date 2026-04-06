@@ -141,25 +141,40 @@ export default function LOHASAnalysis() {
 
         {/* Presets */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-          {PRESETS.map((p) => (
-            <button
-              key={p.label}
-              onClick={() => applyPreset(p)}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.72rem',
-                background: ticker === p.ticker && period === p.period ? 'var(--green-glow)' : 'var(--bg-input)',
-                border: `1px solid ${ticker === p.ticker && period === p.period ? 'var(--green-dim)' : 'var(--border)'}`,
-                color: ticker === p.ticker && period === p.period ? 'var(--green)' : 'var(--text-secondary)',
-                borderRadius: 'var(--radius)',
-                padding: '0.35rem 0.75rem',
-                cursor: 'pointer',
-                letterSpacing: '0.04em',
-              }}
-            >
-              {p.label}
-            </button>
-          ))}
+          {PRESETS.map((p) => {
+            const isActive = ticker === p.ticker && period === p.period
+            return (
+              <button
+                key={p.label}
+                onClick={() => applyPreset(p)}
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.72rem',
+                  background: isActive ? 'var(--accent-glow)' : 'transparent',
+                  border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border-bright)'}`,
+                  color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
+                  borderRadius: 'var(--radius)',
+                  padding: '0.35rem 0.75rem',
+                  cursor: 'pointer',
+                  letterSpacing: '0.04em',
+                  fontWeight: isActive ? '600' : '400',
+                  transition: 'color 0.15s, border-color 0.15s, background 0.15s',
+                }}
+                onMouseEnter={(e) => {
+                  if (isActive) return
+                  e.currentTarget.style.color = 'var(--accent)'
+                  e.currentTarget.style.borderColor = 'var(--accent-dim)'
+                }}
+                onMouseLeave={(e) => {
+                  if (isActive) return
+                  e.currentTarget.style.color = 'var(--text-secondary)'
+                  e.currentTarget.style.borderColor = 'var(--border-bright)'
+                }}
+              >
+                {p.label}
+              </button>
+            )
+          })}
         </div>
 
         <div className="form-grid">
