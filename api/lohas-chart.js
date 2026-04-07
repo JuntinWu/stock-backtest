@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const { fetchHistory } = require('./_lib/yahoo');
 const { computeLohas } = require('./_lib/lohas');
 const { Resvg } = require('@resvg/resvg-js');
@@ -9,14 +11,20 @@ const PADDING = { top: 100, right: 90, bottom: 50, left: 70 };
 const CHART_W = WIDTH - PADDING.left - PADDING.right;
 const CHART_H = HEIGHT - PADDING.top - PADDING.bottom;
 
+// PNG labels use English only (no CJK font needed on Vercel)
 const LINES = [
-  { key: 'plus2s',  color: '#f43f5e', label: '樂觀線（+2σ）',   dash: '6,3' },
-  { key: 'plus1s',  color: '#f4a0ab', label: '相對樂觀（+1σ）', dash: '' },
-  { key: 'trend',   color: '#8b949e', label: '趨勢線',           dash: '4,4' },
-  { key: 'minus1s', color: '#79c0ff', label: '相對悲觀（-1σ）', dash: '' },
-  { key: 'minus2s', color: '#388bfd', label: '悲觀線（-2σ）',   dash: '' },
-  { key: 'close',   color: '#1a1a2e', label: '收盤價',           dash: '' },
+  { key: 'plus2s',  color: '#f43f5e', label: '+2s Optimistic',    dash: '6,3' },
+  { key: 'plus1s',  color: '#f4a0ab', label: '+1s',               dash: '' },
+  { key: 'trend',   color: '#8b949e', label: 'Trend',             dash: '4,4' },
+  { key: 'minus1s', color: '#79c0ff', label: '-1s',               dash: '' },
+  { key: 'minus2s', color: '#388bfd', label: '-2s Pessimistic',   dash: '' },
+  { key: 'close',   color: '#1a1a2e', label: 'Close',             dash: '' },
 ];
+
+// Load bundled font for resvg (Vercel has no system fonts)
+const FONT_PATH = path.join(__dirname, '_lib', 'fonts', 'Inter.ttf');
+let fontBuffer = null;
+try { fontBuffer = fs.readFileSync(FONT_PATH); } catch (_) { /* fallback */ }
 
 // ─── SVG helpers ──────────────────────────────────────────────────────────────
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -52,7 +60,7 @@ function buildPolyline(chartData, key, yMin, yMax) {
   return points.join(' ');
 }
 
-// ─── Render SVG ───────────────────────────────────────────────────────────────
+// ─── Render SVG (for PNG conversion — English only) ──────────────────────────
 function renderSVG(ticker, data, periodYears) {
   const chartData = data.chartData;
   const last = chartData[chartData.length - 1];
@@ -68,7 +76,7 @@ function renderSVG(ticker, data, periodYears) {
   const yPad = (yMax - yMin) * 0.05;
   const scale = niceScale(yMin - yPad, yMax + yPad);
 
-  // X-axis labels (show ~6 evenly spaced years)
+  // X-axis labels (~6 evenly spaced)
   const tickInterval = Math.max(1, Math.floor(chartData.length / 6));
   const xLabels = [];
   for (let i = 0; i < chartData.length; i += tickInterval) {
@@ -78,31 +86,37 @@ function renderSVG(ticker, data, periodYears) {
   }
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
-<defs>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&amp;display=swap');
-    text { font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', 'Helvetica Neue', Arial, sans-serif; }
-  </style>
-</defs>
 <rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff" rx="16"/>
 `;
 
-  // Title
-  svg += `<text x="${PADDING.left}" y="36" font-size="20" font-weight="700" fill="#1a1a2e">${esc(`樂活五線譜 — ${ticker}`)}</text>\n`;
-  svg += `<text x="${PADDING.left}" y="56" font-size="12" fill="#888">${esc(`對數線性迴歸 ± 標準差波段｜使用調整後收盤價｜期間 ${periodYears} 年`)}</text>\n`;
+  // Title (English for PNG compatibility)
+  svg += `<text x="${PADDING.left}" y="36" font-size="20" font-weight="700" fill="#1a1a2e" font-family="Inter,sans-serif">LOHAS Five Lines - ${esc(ticker)}</text>\n`;
+  svg += `<text x="${PADDING.left}" y="56" font-size="12" fill="#888" font-family="Inter,sans-serif">Log-Linear Regression +/- Std Dev Bands | Adj. Close | ${periodYears}Y</text>\n`;
 
-  // Legend (top row of colored pills with values)
+  // Legend row at top-right
+  let legendX = PADDING.left + CHART_W + PADDING.right - 10;
+  const legendY = 36;
+  for (let i = LINES.length - 1; i >= 0; i--) {
+    const line = LINES[i];
+    const labelW = line.label.length * 7 + 28;
+    legendX -= labelW;
+    const dashAttr = line.dash ? ` stroke-dasharray="${line.dash}"` : '';
+    svg += `<line x1="${legendX}" y1="${legendY}" x2="${legendX + 16}" y2="${legendY}" stroke="${line.color}" stroke-width="2"${dashAttr}/>\n`;
+    svg += `<text x="${legendX + 20}" y="${legendY + 4}" font-size="11" fill="#555" font-family="Inter,sans-serif">${esc(line.label)}</text>\n`;
+  }
+
+  // Value pills row
   const pillY = 72;
-  let pillX = 140;
+  let pillX = PADDING.left;
   for (const line of LINES) {
     const val = last[line.key].toFixed(2);
     const isClose = line.key === 'close';
-    const displayText = isClose ? `● ${val}` : `— ${val}`;
-    const textW = displayText.length * 8 + 16;
-    // Pill background
+    const prefix = isClose ? 'Close ' : '';
+    const displayText = `${prefix}${val}`;
+    const textW = displayText.length * 7.5 + 18;
     svg += `<rect x="${pillX}" y="${pillY}" width="${textW}" height="22" rx="6" fill="${isClose ? '#f0f0f5' : '#fff'}" stroke="${line.color}" stroke-width="1.5"/>`;
-    svg += `<text x="${pillX + textW / 2}" y="${pillY + 15}" text-anchor="middle" font-size="11" font-weight="600" fill="${line.color}">${esc(displayText)}</text>\n`;
-    pillX += textW + 10;
+    svg += `<text x="${pillX + textW / 2}" y="${pillY + 15}" text-anchor="middle" font-size="11" font-weight="600" fill="${line.color}" font-family="Inter,sans-serif">${esc(displayText)}</text>\n`;
+    pillX += textW + 8;
   }
 
   // Y-axis grid lines and labels
@@ -110,15 +124,15 @@ function renderSVG(ticker, data, periodYears) {
     const yFrac = (tick - scale.min) / (scale.max - scale.min);
     const y = PADDING.top + CHART_H - yFrac * CHART_H;
     svg += `<line x1="${PADDING.left}" y1="${y}" x2="${PADDING.left + CHART_W}" y2="${y}" stroke="#e8e8e8" stroke-width="1"/>\n`;
-    svg += `<text x="${PADDING.left - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#666">${tick.toFixed(2)}</text>\n`;
+    svg += `<text x="${PADDING.left - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#666" font-family="Inter,sans-serif">${tick.toFixed(2)}</text>\n`;
   }
 
   // X-axis labels
   for (const { x, label } of xLabels) {
-    svg += `<text x="${x}" y="${PADDING.top + CHART_H + 20}" text-anchor="middle" font-size="11" fill="#666">${esc(label)}</text>\n`;
+    svg += `<text x="${x}" y="${PADDING.top + CHART_H + 20}" text-anchor="middle" font-size="11" fill="#666" font-family="Inter,sans-serif">${esc(label)}</text>\n`;
   }
 
-  // Chart border (bottom and left)
+  // Chart border (bottom)
   svg += `<line x1="${PADDING.left}" y1="${PADDING.top + CHART_H}" x2="${PADDING.left + CHART_W}" y2="${PADDING.top + CHART_H}" stroke="#ccc" stroke-width="1"/>\n`;
 
   // Draw lines
@@ -129,34 +143,30 @@ function renderSVG(ticker, data, periodYears) {
     svg += `<polyline points="${points}" fill="none" stroke="${line.color}" stroke-width="${width}"${dashAttr} stroke-linejoin="round" stroke-linecap="round"/>\n`;
   }
 
-  // Right-side value labels
-  for (const line of LINES) {
+  // Right-side value labels (with collision avoidance)
+  const rightLabels = LINES.map((line) => {
     const val = last[line.key];
     const yFrac = (val - scale.min) / (scale.max - scale.min);
     const y = PADDING.top + CHART_H - yFrac * CHART_H;
-    const text = val.toFixed(2);
-    const isClose = line.key === 'close';
-    const textW = text.length * 7 + (isClose ? 20 : 12);
-    const labelX = PADDING.left + CHART_W + 6;
-
-    svg += `<rect x="${labelX}" y="${y - 10}" width="${textW}" height="20" rx="4" fill="${line.color}"/>`;
-    if (isClose) {
-      svg += `<text x="${labelX + textW / 2}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">● ${esc(text)}</text>\n`;
-    } else {
-      svg += `<text x="${labelX + textW / 2}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">${esc(text)}</text>\n`;
+    return { line, val, y };
+  });
+  // Sort by Y position and push apart overlapping labels
+  rightLabels.sort((a, b) => a.y - b.y);
+  const MIN_GAP = 22;
+  for (let i = 1; i < rightLabels.length; i++) {
+    const diff = rightLabels[i].y - rightLabels[i - 1].y;
+    if (diff < MIN_GAP) {
+      rightLabels[i].y = rightLabels[i - 1].y + MIN_GAP;
     }
   }
 
-  // Legend row at top-right
-  let legendX = PADDING.left + CHART_W - 20;
-  const legendY = 36;
-  for (let i = LINES.length - 1; i >= 0; i--) {
-    const line = LINES[i];
-    const labelW = line.label.length * 12 + 24;
-    legendX -= labelW;
-    const dashAttr = line.dash ? ` stroke-dasharray="${line.dash}"` : '';
-    svg += `<line x1="${legendX}" y1="${legendY}" x2="${legendX + 16}" y2="${legendY}" stroke="${line.color}" stroke-width="2"${dashAttr}/>\n`;
-    svg += `<text x="${legendX + 20}" y="${legendY + 4}" font-size="11" fill="#555">${esc(line.label)}</text>\n`;
+  for (const { line, val, y } of rightLabels) {
+    const text = val.toFixed(2);
+    const textW = text.length * 7.5 + 14;
+    const labelX = PADDING.left + CHART_W + 6;
+
+    svg += `<rect x="${labelX}" y="${y - 10}" width="${textW}" height="20" rx="4" fill="${line.color}"/>`;
+    svg += `<text x="${labelX + textW / 2}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="600" fill="#fff" font-family="Inter,sans-serif">${esc(text)}</text>\n`;
   }
 
   svg += `</svg>`;
@@ -165,17 +175,21 @@ function renderSVG(ticker, data, periodYears) {
 
 // ─── Render PNG from SVG ──────────────────────────────────────────────────────
 function renderPNG(svgString) {
-  const resvg = new Resvg(svgString, {
-    fitTo: { mode: 'width', value: WIDTH * 2 }, // 2x for retina
+  const opts = {
+    fitTo: { mode: 'width', value: WIDTH * 2 },
     font: {
-      loadSystemFonts: true,
+      loadSystemFonts: false,
+      fontFiles: fontBuffer ? [FONT_PATH] : [],
+      defaultFontFamily: 'Inter',
     },
-  });
+  };
+
+  const resvg = new Resvg(svgString, opts);
   const pngData = resvg.render();
   return pngData.asPng();
 }
 
-// ─── Render HTML ──────────────────────────────────────────────────────────────
+// ─── Render HTML (keeps Chinese — rendered client-side with browser fonts) ───
 function renderHTML(ticker, data, periodYears) {
   const last = data.chartData[data.chartData.length - 1];
   const chartDataJSON = JSON.stringify(data.chartData);
@@ -269,22 +283,22 @@ module.exports = async function handler(req, res) {
   const { ticker, period, sigma, format } = req.query;
 
   if (!ticker) {
-    return res.status(400).json({ error: '缺少必要參數：ticker（例如 0050.TW）' });
+    return res.status(400).json({ error: 'Missing required param: ticker (e.g. 0050.TW)' });
   }
 
   const periodYears = parseInt(period, 10) || 3;
   if (![3, 5, 10].includes(periodYears)) {
-    return res.status(400).json({ error: '期間僅支援 3、5、10 年' });
+    return res.status(400).json({ error: 'period must be 3, 5, or 10' });
   }
 
   const sigmaMult = parseFloat(sigma) || 2;
   if (sigmaMult < 0.5 || sigmaMult > 3) {
-    return res.status(400).json({ error: '標準差倍數須介於 0.5 ~ 3' });
+    return res.status(400).json({ error: 'sigma must be between 0.5 and 3' });
   }
 
   const outputFormat = (format || 'png').toLowerCase();
   if (!['png', 'svg', 'html', 'json'].includes(outputFormat)) {
-    return res.status(400).json({ error: 'format 僅支援 png、svg、html、json' });
+    return res.status(400).json({ error: 'format must be png, svg, html, or json' });
   }
 
   try {
@@ -296,7 +310,7 @@ module.exports = async function handler(req, res) {
 
     if (!history || history.length < 10) {
       return res.status(404).json({
-        error: `找不到 "${ticker}" 的歷史資料。台股請加 .TW（如 0050.TW），美股直接輸入代號（如 VOO）。`,
+        error: `No data found for "${ticker}". Use .TW suffix for Taiwan stocks (e.g. 0050.TW).`,
       });
     }
 
@@ -330,7 +344,7 @@ module.exports = async function handler(req, res) {
     return res.send(Buffer.from(pngBuffer));
   } catch (err) {
     console.error(err);
-    const msg = err.message || '未知錯誤';
-    res.status(500).json({ error: `圖表生成失敗：${msg}` });
+    const msg = err.message || 'Unknown error';
+    res.status(500).json({ error: `Chart generation failed: ${msg}` });
   }
 };
