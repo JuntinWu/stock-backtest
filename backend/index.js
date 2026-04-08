@@ -334,6 +334,29 @@ app.get('/api/prices', async (req, res) => {
 });
 
 // ─── LOHAS Five Lines API ──────────────────────────────────────────────────
+const { calculate: calculateDividend } = require('../api/_lib/etf-dividend');
+
+app.post('/api/etf-dividend', (req, res) => {
+  const { targetMonthly, etfs } = req.body;
+
+  if (!targetMonthly || targetMonthly <= 0) {
+    return res.status(400).json({ error: '目標月被動收入必須為正數' });
+  }
+
+  if (!Array.isArray(etfs) || etfs.length === 0) {
+    return res.status(400).json({ error: '至少需要一支 ETF' });
+  }
+
+  for (const etf of etfs) {
+    if (!etf.ticker || !etf.name || etf.price <= 0 || etf.annualDividend <= 0) {
+      return res.status(400).json({ error: `ETF "${etf.ticker || '?'}" 資料不完整` });
+    }
+  }
+
+  const result = calculateDividend(targetMonthly, etfs);
+  res.json(result);
+});
+
 const { computeLohas } = require('../api/_lib/lohas');
 
 app.get('/api/lohas', async (req, res) => {

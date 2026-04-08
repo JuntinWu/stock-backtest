@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, ReferenceLine,
 } from 'recharts'
-import type { ETFInfo, ETFAllocation, CapitalResult, ETFCalculationResult } from '../types'
+import type { ETFInfo, ETFCalculationResult } from '../types'
 
 // ─── Default Data ────────────────────────────────────────────────────────────
 
@@ -49,39 +49,17 @@ function formatWan(n: number) {
   return formatNum(n)
 }
 
-function calcOneCapital(capital: number, etfs: ETFInfo[], targetMonthly: number): CapitalResult {
-  const capitalPerETF = capital / etfs.length
-  const allocations: ETFAllocation[] = etfs.map((etf) => {
-    const shares = Math.floor(capitalPerETF / (etf.price * 1000))
-    const totalShares = shares * 1000
-    const annualDividend = totalShares * etf.annualDividend
-    const monthlyDividend = annualDividend / 12
-    const investedAmount = shares * etf.price * 1000
-    const dividendYield = investedAmount > 0 ? (annualDividend / investedAmount) * 100 : 0
-    return { ticker: etf.ticker, name: etf.name, price: etf.price, shares, totalShares, annualDividend, monthlyDividend, investedAmount, dividendYield }
+async function fetchCalculation(targetMonthly: number, etfs: ETFInfo[]): Promise<ETFCalculationResult> {
+  const res = await fetch('/api/etf-dividend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ targetMonthly, etfs }),
   })
-  const totalAnnualDividend = allocations.reduce((s, a) => s + a.annualDividend, 0)
-  const totalMonthlyDividend = totalAnnualDividend / 12
-  return { capital, capitalPerETF, allocations, totalAnnualDividend, totalMonthlyDividend, achieveTarget: totalMonthlyDividend >= targetMonthly }
-}
-
-function calculate(targetMonthly: number, etfs: ETFInfo[]): ETFCalculationResult {
-  const step = 1000000
-  const capitalResults: CapitalResult[] = []
-  let reached = false
-  for (let cap = step; cap <= step * 50; cap += step) {
-    const cr = calcOneCapital(cap, etfs, targetMonthly)
-    capitalResults.push(cr)
-    if (cr.achieveTarget && !reached) {
-      reached = true
-      if (capitalResults.length >= 6) {
-        capitalResults.push(calcOneCapital(cap + step, etfs, targetMonthly))
-        break
-      }
-    }
-    if (reached && capitalResults.length >= 6) break
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: '計算失敗' }))
+    throw new Error(err.error || '計算失敗')
   }
-  return { targetMonthly, etfs, capitalResults, requiredCapital: capitalResults.find((cr) => cr.achieveTarget)?.capital ?? null }
+  return res.json()
 }
 
 // ─── Intro Section ───────────────────────────────────────────────────────────
@@ -122,9 +100,10 @@ function ETFIntro() {
 
 // ─── Form ────────────────────────────────────────────────────────────────────
 
-function ETFForm({ onCalculate }: { onCalculate: (r: ETFCalculationResult) => void }) {
+function ETFForm({ onCalculate, onError }: { onCalculate: (r: ETFCalculationResult) => void; onError: (msg: string) => void }) {
   const [targetMonthly, setTargetMonthly] = useState(40000)
   const [etfs, setETFs] = useState<ETFInfo[]>(DEFAULT_ETFS)
+  const [loading, setLoading] = useState(false)
 
   const updatePrice = (i: number, v: string) => {
     const num = parseFloat(v)
@@ -143,10 +122,19 @@ function ETFForm({ onCalculate }: { onCalculate: (r: ETFCalculationResult) => vo
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (targetMonthly <= 0) return
-    onCalculate(calculate(targetMonthly, etfs))
+    if (targetMonthly <= 0 || loading) return
+    setLoading(true)
+    onError('')
+    try {
+      const result = await fetchCalculation(targetMonthly, etfs)
+      onCalculate(result)
+    } catch (err) {
+      onError(err instanceof Error ? err.message : '計算失敗')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -214,8 +202,8 @@ function ETFForm({ onCalculate }: { onCalculate: (r: ETFCalculationResult) => vo
         * 每季配息可個別修改，年配息自動加總。月份：{etfs.map((e) => `${e.ticker}(${e.dividendMonths})`).join('、')}
       </div>
 
-      <button type="submit" className="submit-btn" style={{ width: '100%' }}>
-        {'\u{1F4CA}'} 開始計算
+      <button type="submit" className="submit-btn" style={{ width: '100%' }} disabled={loading}>
+        {loading ? '\u23F3 計算中...' : '\u{1F4CA} 開始計算'}
       </button>
     </form>
   )
@@ -413,11 +401,21 @@ function ResultTables({ result }: { result: ETFCalculationResult }) {
 
 export default function ETFDividend() {
   const [result, setResult] = useState<ETFCalculationResult | null>(null)
+  const [error, setError] = useState('')
 
   return (
     <>
       <ETFIntro />
-      <ETFForm onCalculate={setResult} />
+      <ETFForm onCalculate={(r) => { setResult(r); setError('') }} onError={setError} />
+      {error && (
+        <div style={{
+          background: 'var(--red-glow)', border: '1px solid var(--red-dim)',
+          borderRadius: 'var(--radius-lg)', padding: '1rem 1.25rem', margin: '1rem 0',
+          color: 'var(--red)', fontSize: '0.9rem', fontWeight: 600,
+        }}>
+          {error}
+        </div>
+      )}
       {result && (
         <div className="results-enter">
           <SummaryCards result={result} />
