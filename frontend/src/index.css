@@ -366,6 +366,7 @@ body::after {
 
 .hero-stats {
   display: flex;
+  justify-content: center;
   gap: 2rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
@@ -560,6 +561,40 @@ body::after {
 .submit-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* ─── Preset Buttons ─────────────────────────────────────────────────────── */
+.preset-btn {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.4rem 0.9rem;
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+  border-color: var(--accent-dim);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.preset-btn.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+[data-theme="dark"] .preset-btn.active {
+  color: var(--accent);
 }
 
 /* ─── Error ──────────────────────────────────────────────────────────────── */

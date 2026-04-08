@@ -43,6 +43,46 @@ export interface BacktestResponse {
   metadata: BacktestMeta;
 }
 
+// ─── ETF Dividend Calculator ─────────────────────────────────────────────────
+export interface ETFInfo {
+  ticker: string;
+  name: string;
+  price: number;
+  quarterlyDividends: [number, number, number, number];
+  annualDividend: number;
+  dividendMonths: string;
+  emoji: string;
+  color: string;
+}
+
+export interface ETFAllocation {
+  ticker: string;
+  name: string;
+  price: number;
+  shares: number;
+  totalShares: number;
+  annualDividend: number;
+  monthlyDividend: number;
+  investedAmount: number;
+  dividendYield: number;
+}
+
+export interface CapitalResult {
+  capital: number;
+  capitalPerETF: number;
+  allocations: ETFAllocation[];
+  totalAnnualDividend: number;
+  totalMonthlyDividend: number;
+  achieveTarget: boolean;
+}
+
+export interface ETFCalculationResult {
+  targetMonthly: number;
+  etfs: ETFInfo[];
+  capitalResults: CapitalResult[];
+  requiredCapital: number | null;
+}
+
 // ─── LOHAS Five Lines ─────────────────────────────────────────────────────────
 export interface LohasChartPoint {
   date: string;

@@ -5,13 +5,14 @@ import ResultSummary from './components/ResultSummary'
 import ResultChart from './components/ResultChart'
 import PriceLookup from './components/PriceLookup'
 import LOHASAnalysis from './components/LOHASAnalysis'
+import ETFDividend from './components/ETFDividend'
 import AdSlot from './components/AdSlot'
 import Disclaimer from './components/Disclaimer'
 
-type Tab = 'backtest' | 'lohas' | 'prices'
+type Tab = 'backtest' | 'lohas' | 'prices' | 'etf'
 type Theme = 'dark' | 'light'
 
-const VALID_TABS: Tab[] = ['backtest', 'lohas', 'prices']
+const VALID_TABS: Tab[] = ['backtest', 'lohas', 'prices', 'etf']
 
 function getTabFromHash(): Tab {
   const hash = window.location.hash.replace('#', '') as Tab
@@ -129,7 +130,7 @@ export default function App() {
         </div>
         <h1 className="hero-title">Stock<span className="accent">Pilot</span></h1>
         <p className="hero-tagline">
-          用<strong>真實歷史股價</strong>驅動的投資分析工具。回測 DCA、單筆投入、天選之人等策略的長期表現，搭配<strong>樂活五線譜</strong>判斷目前股價位置，讓數據告訴你最佳投資時機。
+          用<strong>真實歷史股價</strong>驅動的投資分析工具。回測 DCA、單筆投入、天選之人等策略的長期表現，搭配<strong>樂活五線譜</strong>判斷目前股價位置，再用<strong>樂退月月配</strong>試算高股息 ETF 被動收入，讓數據告訴你最佳投資時機。
         </p>
         <div className="hero-features">
           <span className="hero-pill"><span className="pill-icon">&#128202;</span> 四策略回測比較</span>
@@ -137,6 +138,7 @@ export default function App() {
           <span className="hero-pill"><span className="pill-icon">&#128269;</span> 歷史價格查詢</span>
           <span className="hero-pill"><span className="pill-icon">&#127470;&#127481;</span> 台股 / 美股</span>
           <span className="hero-pill"><span className="pill-icon">&#128200;</span> XIRR 年化報酬</span>
+          <span className="hero-pill"><span className="pill-icon">&#128176;</span> 樂退月月配試算</span>
         </div>
         <div className="hero-stats">
           <div className="hero-stat">
@@ -168,13 +170,19 @@ export default function App() {
             onClick={() => setTab('lohas')}
           >
             <span className="tab-icon">&#127925;</span>樂活五線譜
-            <span className="tab-badge-new">NEW</span>
           </button>
           <button
             className={`tab-btn ${tab === 'prices' ? 'active' : ''}`}
             onClick={() => setTab('prices')}
           >
             <span className="tab-icon">&#128269;</span>歷史價格查詢
+          </button>
+          <button
+            className={`tab-btn ${tab === 'etf' ? 'active' : ''}`}
+            onClick={() => setTab('etf')}
+          >
+            <span className="tab-icon">&#128176;</span>樂退月月配
+            <span className="tab-badge-new">NEW</span>
           </button>
         </div>
       </div>
@@ -221,6 +229,9 @@ export default function App() {
 
       {/* Price Lookup Tab */}
       {tab === 'prices' && <PriceLookup />}
+
+      {/* ETF Dividend Tab */}
+      {tab === 'etf' && <ETFDividend />}
 
       {/* Bottom Ad Slot (above footer) */}
       <AdSlot slot="1111111111" format="horizontal" className="ad-slot-bottom" />
