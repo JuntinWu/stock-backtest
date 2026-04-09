@@ -6,40 +6,43 @@ import ResultChart from './components/ResultChart'
 import PriceLookup from './components/PriceLookup'
 import LOHASAnalysis from './components/LOHASAnalysis'
 import ETFDividend from './components/ETFDividend'
+import LandingPage from './components/LandingPage'
 import AdSlot from './components/AdSlot'
 import Disclaimer from './components/Disclaimer'
 
 type Tab = 'backtest' | 'lohas' | 'prices' | 'etf'
+type View = 'landing' | Tab
 type Theme = 'dark' | 'light'
 
 const VALID_TABS: Tab[] = ['backtest', 'lohas', 'prices', 'etf']
 
-function getTabFromHash(): Tab {
-  const hash = window.location.hash.replace('#', '') as Tab
-  return VALID_TABS.includes(hash) ? hash : 'backtest'
+function getViewFromHash(): View {
+  const hash = window.location.hash.replace('#', '')
+  if (VALID_TABS.includes(hash as Tab)) return hash as Tab
+  return 'landing'
 }
 
-function useHashTab(): [Tab, (t: Tab) => void] {
-  const [tab, setTabState] = useState<Tab>(() => getTabFromHash())
+function useHashNav(): [View, (v: View) => void] {
+  const [view, setViewState] = useState<View>(() => getViewFromHash())
 
   useEffect(() => {
-    const onHashChange = () => setTabState(getTabFromHash())
+    const onHashChange = () => setViewState(getViewFromHash())
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
-  const setTab = (t: Tab) => {
-    if (t === tab) return
-    // default tab uses clean URL (no hash), others use #tabname
-    if (t === 'backtest') {
+  const setView = (v: View) => {
+    if (v === view) return
+    if (v === 'landing') {
       history.pushState(null, '', window.location.pathname + window.location.search)
     } else {
-      history.pushState(null, '', `#${t}`)
+      history.pushState(null, '', `#${v}`)
     }
-    setTabState(t)
+    setViewState(v)
+    window.scrollTo({ top: 0 })
   }
 
-  return [tab, setTab]
+  return [view, setView]
 }
 
 function useTheme() {
@@ -76,12 +79,15 @@ function useTheme() {
 }
 
 export default function App() {
-  const [tab, setTab] = useHashTab()
+  const [view, setView] = useHashNav()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BacktestResponse | null>(null)
   const [disclaimerOpen, setDisclaimerOpen] = useState(false)
   const { theme, toggle: toggleTheme } = useTheme()
+
+  const isLanding = view === 'landing'
+  const tab = isLanding ? null : view
 
   const handleSubmit = async (params: BacktestParams) => {
     setLoading(true)
@@ -122,70 +128,51 @@ export default function App() {
         <span className="toggle-label toggle-icon-moon">&#127769;</span>
       </div>
 
-      {/* Hero */}
-      <section className="hero">
-        <div className="hero-badges">
-          <span className="hero-badge live">LIVE DATA</span>
-          <span className="hero-badge source">YAHOO FINANCE</span>
-        </div>
-        <h1 className="hero-title">Stock<span className="accent">Pilot</span></h1>
-        <p className="hero-tagline">
-          用<strong>真實歷史股價</strong>驅動的投資分析工具。回測 DCA、單筆投入、天選之人等策略的長期表現，搭配<strong>樂活五線譜</strong>判斷目前股價位置，再用<strong>樂退月月配</strong>試算高股息 ETF 被動收入，讓數據告訴你最佳投資時機。
-        </p>
-        <div className="hero-features">
-          <span className="hero-pill"><span className="pill-icon">&#128202;</span> 四策略回測比較</span>
-          <span className="hero-pill"><span className="pill-icon">&#127925;</span> 樂活五線譜分析</span>
-          <span className="hero-pill"><span className="pill-icon">&#128269;</span> 歷史價格查詢</span>
-          <span className="hero-pill"><span className="pill-icon">&#127470;&#127481;</span> 台股 / 美股</span>
-          <span className="hero-pill"><span className="pill-icon">&#128200;</span> XIRR 年化報酬</span>
-          <span className="hero-pill"><span className="pill-icon">&#128176;</span> 樂退月月配試算</span>
-        </div>
-        <div className="hero-stats">
-          <div className="hero-stat">
-            <div className="hero-stat-value">20+</div>
-            <div className="hero-stat-label">年回測區間</div>
-          </div>
-          <div className="hero-stat">
-            <div className="hero-stat-value">4</div>
-            <div className="hero-stat-label">投資策略比較</div>
-          </div>
-          <div className="hero-stat">
-            <div className="hero-stat-value">&#127757; 全球</div>
-            <div className="hero-stat-label">市場支援</div>
-          </div>
-        </div>
-      </section>
+      {/* Landing Page */}
+      {isLanding && <LandingPage onNavigate={(t) => setView(t)} />}
 
-      {/* Tabs */}
-      <div className="tab-bar-wrap">
-        <div className="tab-bar">
-          <button
-            className={`tab-btn ${tab === 'backtest' ? 'active' : ''}`}
-            onClick={() => setTab('backtest')}
-          >
-            <span className="tab-icon">&#128202;</span>回測分析
-          </button>
-          <button
-            className={`tab-btn ${tab === 'lohas' ? 'active' : ''}`}
-            onClick={() => setTab('lohas')}
-          >
-            <span className="tab-icon">&#127925;</span>樂活五線譜
-          </button>
-          <button
-            className={`tab-btn ${tab === 'prices' ? 'active' : ''}`}
-            onClick={() => setTab('prices')}
-          >
-            <span className="tab-icon">&#128269;</span>歷史價格查詢
-          </button>
-          <button
-            className={`tab-btn ${tab === 'etf' ? 'active' : ''}`}
-            onClick={() => setTab('etf')}
-          >
-            <span className="tab-icon">&#128176;</span>樂退月月配
-            <span className="tab-badge-new">NEW</span>
-          </button>
-        </div>
-      </div>
+      {/* Inner Pages */}
+      {!isLanding && (
+        <>
+          {/* Compact Header */}
+          <div className="inner-header">
+            <button className="back-btn" onClick={() => setView('landing')}>
+              &larr; <span className="back-brand">Stock<span className="accent">Pilot</span></span>
+            </button>
+          </div>
+
+          {/* Tabs */}
+          <div className="tab-bar-wrap">
+            <div className="tab-bar">
+              <button
+                className={`tab-btn ${tab === 'backtest' ? 'active' : ''}`}
+                onClick={() => setView('backtest')}
+              >
+                <span className="tab-icon">&#128202;</span>回測分析
+              </button>
+              <button
+                className={`tab-btn ${tab === 'lohas' ? 'active' : ''}`}
+                onClick={() => setView('lohas')}
+              >
+                <span className="tab-icon">&#127925;</span>樂活五線譜
+              </button>
+              <button
+                className={`tab-btn ${tab === 'prices' ? 'active' : ''}`}
+                onClick={() => setView('prices')}
+              >
+                <span className="tab-icon">&#128269;</span>歷史價格查詢
+              </button>
+              <button
+                className={`tab-btn ${tab === 'etf' ? 'active' : ''}`}
+                onClick={() => setView('etf')}
+              >
+                <span className="tab-icon">&#128176;</span>樂退月月配
+                <span className="tab-badge-new">NEW</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Backtest Tab */}
       {tab === 'backtest' && (

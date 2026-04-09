@@ -376,7 +376,15 @@ function DividendChart({ result }: { result: ETFCalculationResult }) {
               stackId="a" fill={colors[i]} radius={i === result.etfs.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]} />
           ))}
           <ReferenceLine y={result.targetMonthly} stroke="#f87171" strokeDasharray="8 4" strokeWidth={2}
-            label={{ value: `目標 $${result.targetMonthly.toLocaleString()}/月`, fill: '#f87171', fontSize: 12, position: 'right' }} />
+            label={({ viewBox }: { viewBox: { x: number; y: number; width: number } }) => {
+              const text = `目標 $${result.targetMonthly.toLocaleString()}/月`
+              return (
+                <g>
+                  <rect x={viewBox.x + viewBox.width - 148} y={viewBox.y - 22} width={140} height={20} rx={4} fill="rgba(30,30,30,0.82)" />
+                  <text x={viewBox.x + viewBox.width - 78} y={viewBox.y - 9} textAnchor="middle" fill="#f87171" fontSize={11} fontWeight={600}>{text}</text>
+                </g>
+              )
+            }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
