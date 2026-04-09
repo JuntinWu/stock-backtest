@@ -170,6 +170,40 @@ export default function App() {
       {/* Backtest Tab */}
       {tab === 'backtest' && (
         <>
+          <div className="etf-intro" style={{
+            background: 'var(--bg-card)', backdropFilter: 'var(--glass-blur)',
+            border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
+          }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              &#128202; 什麼是「回測四策略」？
+            </h3>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '0.75rem' }}>
+              用 <strong style={{ color: 'var(--text-primary)' }}>Yahoo Finance 真實歷史股價</strong>，模擬四種不同投入時機的策略，
+              計算 <strong style={{ color: 'var(--text-primary)' }}>XIRR 年化報酬率</strong>，
+              回答一個核心問題：<strong style={{ color: 'var(--accent)' }}>「擇時」到底值不值得？</strong>
+            </p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '0.75rem' }}>
+              結論往往讓人意外 — 即使每年買在最高點的「地獄倒霉鬼」，長期下來仍然是正報酬。
+              <strong style={{ color: 'var(--text-primary)' }}>買什麼比什麼時候買重要得多。</strong>
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+              {[
+                { emoji: '⚡', label: '單筆投入', desc: '第一天 All-in', color: 'var(--amber)' },
+                { emoji: '👑', label: '天選之人', desc: '年度最低點', color: 'var(--green)' },
+                { emoji: '📅', label: '每月定額 DCA', desc: '不擇時', color: 'var(--blue)' },
+                { emoji: '💔', label: '地獄倒霉鬼', desc: '年度最高點', color: 'var(--red)' },
+              ].map((s) => (
+                <span key={s.label} style={{
+                  fontSize: '0.78rem', padding: '0.3rem 0.75rem', borderRadius: '20px', fontWeight: 600,
+                  background: `color-mix(in srgb, ${s.color} 12%, transparent)`,
+                  color: s.color, border: `1px solid color-mix(in srgb, ${s.color} 40%, transparent)`,
+                }}>
+                  {s.emoji} {s.label} — {s.desc}
+                </span>
+              ))}
+            </div>
+          </div>
           <BacktestForm onSubmit={handleSubmit} loading={loading} />
 
           {error && (
@@ -205,7 +239,47 @@ export default function App() {
       )}
 
       {/* LOHAS Five Lines Tab */}
-      {tab === 'lohas' && <LOHASAnalysis />}
+      {tab === 'lohas' && (
+        <>
+          <div className="etf-intro" style={{
+            background: 'var(--bg-card)', backdropFilter: 'var(--glass-blur)',
+            border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
+          }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              &#127925; 什麼是「樂活五線譜」？
+            </h3>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '0.75rem' }}>
+              對歷史收盤價做 <strong style={{ color: 'var(--text-primary)' }}>對數線性迴歸</strong>，
+              畫出趨勢線及上下各 1、2 個標準差的五條參考線。
+              核心假設是 <strong style={{ color: 'var(--accent)' }}>均值回歸</strong> —
+              股價長期沿著趨勢線波動，偏離太多終會回歸。
+            </p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '0.75rem' }}>
+              適合 <strong style={{ color: 'var(--text-primary)' }}>ETF 或具均值回歸特性的標的</strong>（如 0050.TW、VOO）。
+              搭配 R² 決定係數判斷擬合度、CV 變異係數判斷穩定性。
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
+              {[
+                { label: '極度樂觀 +2σ', desc: '歷史偏貴', color: '#f43f5e' },
+                { label: '相對樂觀 +1σ', desc: '稍微偏高', color: '#f59e0b' },
+                { label: '趨勢線', desc: '長期均值', color: '#8b949e' },
+                { label: '相對悲觀 -1σ', desc: '稍微偏低', color: '#38bdf8' },
+                { label: '極度悲觀 -2σ', desc: '歷史偏便宜', color: '#a78bfa' },
+              ].map((s) => (
+                <span key={s.label} style={{
+                  fontSize: '0.78rem', padding: '0.3rem 0.75rem', borderRadius: '20px', fontWeight: 600,
+                  background: `${s.color}18`,
+                  color: s.color, border: `1px solid ${s.color}50`,
+                }}>
+                  {s.label}
+                </span>
+              ))}
+            </div>
+          </div>
+          <LOHASAnalysis />
+        </>
+      )}
 
       {/* ETF Dividend Tab */}
       {tab === 'etf' && <ETFDividend />}
