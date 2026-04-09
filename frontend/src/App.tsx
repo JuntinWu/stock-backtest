@@ -3,18 +3,17 @@ import type { BacktestParams, BacktestResponse } from './types'
 import BacktestForm from './components/BacktestForm'
 import ResultSummary from './components/ResultSummary'
 import ResultChart from './components/ResultChart'
-import PriceLookup from './components/PriceLookup'
 import LOHASAnalysis from './components/LOHASAnalysis'
 import ETFDividend from './components/ETFDividend'
 import LandingPage from './components/LandingPage'
 import AdSlot from './components/AdSlot'
 import Disclaimer from './components/Disclaimer'
 
-type Tab = 'backtest' | 'lohas' | 'prices' | 'etf'
+type Tab = 'backtest' | 'lohas'  | 'etf'
 type View = 'landing' | Tab
 type Theme = 'dark' | 'light'
 
-const VALID_TABS: Tab[] = ['backtest', 'lohas', 'prices', 'etf']
+const VALID_TABS: Tab[] = ['backtest', 'lohas', 'etf']
 
 function getViewFromHash(): View {
   const hash = window.location.hash.replace('#', '')
@@ -157,12 +156,6 @@ export default function App() {
                 <span className="tab-icon">&#127925;</span>樂活五線譜
               </button>
               <button
-                className={`tab-btn ${tab === 'prices' ? 'active' : ''}`}
-                onClick={() => setView('prices')}
-              >
-                <span className="tab-icon">&#128269;</span>歷史價格查詢
-              </button>
-              <button
                 className={`tab-btn ${tab === 'etf' ? 'active' : ''}`}
                 onClick={() => setView('etf')}
               >
@@ -213,9 +206,6 @@ export default function App() {
 
       {/* LOHAS Five Lines Tab */}
       {tab === 'lohas' && <LOHASAnalysis />}
-
-      {/* Price Lookup Tab */}
-      {tab === 'prices' && <PriceLookup />}
 
       {/* ETF Dividend Tab */}
       {tab === 'etf' && <ETFDividend />}

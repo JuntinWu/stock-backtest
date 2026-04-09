@@ -1,4 +1,4 @@
-type Tab = 'backtest' | 'lohas' | 'prices' | 'etf'
+type Tab = 'backtest' | 'lohas' | 'etf'
 
 interface Props {
   onNavigate: (tab: Tab) => void
