@@ -4,165 +4,150 @@ interface Props {
   onNavigate: (tab: Tab) => void
 }
 
-// ─── Animated stock chart line (SVG) ─────────────────────────────────────────
-
-function ChartLine() {
-  return (
-    <svg viewBox="0 0 1200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ position: 'absolute', bottom: '8%', left: 0, width: '100%', height: '40%', opacity: 0.25, pointerEvents: 'none' }}>
-      <polyline
-        points="0,180 80,160 160,150 240,140 320,120 400,130 480,110 560,100 640,90 720,80 800,95 880,70 960,55 1040,40 1120,20 1200,10"
-        stroke="var(--accent)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-// ─── Feature Card ────────────────────────────────────────────────────────────
-
-interface CardProps {
-  icon: string
-  question: string
-  title: string
-  description: string
-  visual: React.ReactNode
-  onClick: () => void
-}
-
-function FeatureCard({ icon, question, title, description, visual, onClick }: CardProps) {
-  return (
-    <div className="landing-card" onClick={onClick} role="button" tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick() }}>
-      <div className="landing-card-icon">{icon}</div>
-      <div className="landing-card-question">{question}</div>
-      <div className="landing-card-arrow">&darr;</div>
-      <div className="landing-card-title">{title}</div>
-      <div className="landing-card-visual">{visual}</div>
-      <div className="landing-card-desc">{description}</div>
-      <div className="landing-card-cta">
-        開始使用 &rarr;
-      </div>
-    </div>
-  )
-}
-
-// ─── Mini visuals for each card ──────────────────────────────────────────────
-
-function BacktestVisual() {
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', width: '100%' }}>
-      {[
-        { icon: '\u{1F4C8}', label: 'DCA 定期定額' },
-        { icon: '\u26A1', label: '單筆投入' },
-        { icon: '\u{1F451}', label: '天選之人' },
-        { icon: '\u{1F494}', label: '地獄倒霉鬼' },
-      ].map((s) => (
-        <div key={s.label} style={{
-          background: 'var(--accent-glow)', border: '1px solid var(--border)',
-          borderRadius: '8px', padding: '0.5rem', textAlign: 'center', fontSize: '0.7rem',
-          color: 'var(--text-secondary)',
-        }}>
-          <div style={{ fontSize: '1.2rem', marginBottom: '0.2rem' }}>{s.icon}</div>
-          {s.label}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function LohasVisual() {
-  return (
-    <svg viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: 80 }}>
-      {/* Five lines */}
-      <line x1="10" y1="15" x2="190" y2="10" stroke="#ef4444" strokeWidth="1.5" opacity="0.7" />
-      <line x1="10" y1="30" x2="190" y2="22" stroke="#f97316" strokeWidth="1.5" opacity="0.7" />
-      <line x1="10" y1="50" x2="190" y2="38" stroke="#9ca3af" strokeWidth="1.5" opacity="0.7" />
-      <line x1="10" y1="68" x2="190" y2="55" stroke="#3b82f6" strokeWidth="1.5" opacity="0.7" />
-      <line x1="10" y1="85" x2="190" y2="70" stroke="#8b5cf6" strokeWidth="1.5" opacity="0.7" />
-      {/* Labels */}
-      <text x="192" y="13" fontSize="7" fill="var(--text-muted)">+2SD</text>
-      <text x="192" y="25" fontSize="7" fill="var(--text-muted)">+1SD</text>
-      <text x="192" y="41" fontSize="7" fill="var(--text-muted)">趨勢</text>
-      <text x="192" y="58" fontSize="7" fill="var(--text-muted)">-1SD</text>
-      <text x="192" y="73" fontSize="7" fill="var(--text-muted)">-2SD</text>
-      {/* Price line */}
-      <polyline points="10,70 30,65 50,55 70,45 90,40 110,35 130,32 150,28 170,25 190,20"
-        stroke="var(--accent)" strokeWidth="2" fill="none" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function MonthlyVisual() {
-  const months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-  const colors = ['#34d399', '#38bdf8', '#fbbf24'] // 0056, 00878, 00919
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.3rem', width: '100%' }}>
-      {months.map((m, i) => (
-        <div key={m} style={{
-          background: `${colors[i % 3]}20`, border: `1px solid ${colors[i % 3]}60`,
-          borderRadius: '6px', padding: '0.3rem', textAlign: 'center', fontSize: '0.65rem',
-          color: colors[i % 3], fontWeight: 600,
-        }}>
-          <div style={{ fontSize: '0.55rem', opacity: 0.7 }}>{m}月</div>
-          $
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// ─── Main Landing Page ───────────────────────────────────────────────────────
-
 export default function LandingPage({ onNavigate }: Props) {
   return (
-    <div className="landing">
-      {/* Hero */}
-      <section className="landing-hero">
-        <ChartLine />
-        <h1 className="landing-title">
-          Stock<span className="accent">Pilot</span> 投資策略全解析
-        </h1>
-        <p className="landing-subtitle">
-          從定期定額到月月配息 — 用數據理解每一種投資邏輯
-        </p>
-        <div className="landing-source">
-          資料來源：歷史回測數據整合 | 核心演算法啟動
+    <div className="lp">
+      {/* ─── Hero ─────────────────────────────────────────────────────── */}
+      <section className="lp-hero">
+        <svg className="lp-hero-line" viewBox="0 0 1000 400" preserveAspectRatio="none" fill="none">
+          <path d="M0 400 L100 380 L250 320 L400 350 L550 220 L700 240 L850 120 L1000 50"
+            stroke="var(--accent)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        </svg>
+        <div className="lp-hero-inner">
+          <div className="lp-pill">
+            資料來源：歷史回測數據整合 | 核心演算法啟動
+          </div>
+          <h1 className="lp-title">
+            StockPilot <span className="lp-title-gradient">投資策略全解析</span>
+          </h1>
+          <p className="lp-subtitle">
+            從定期定額到月月配息 — 用數據理解每一種投資邏輯
+          </p>
+          <div className="lp-cta-row">
+            <button className="lp-cta-primary" onClick={() => onNavigate('backtest')}>開始策略分析</button>
+            <button className="lp-cta-secondary" onClick={() => onNavigate('lohas')}>查看五線譜</button>
+          </div>
         </div>
       </section>
 
-      {/* Three Feature Cards */}
-      <section className="landing-cards">
-        <FeatureCard
-          icon="?"
-          question="我該什麼時候買？"
-          title="回測四策略"
-          description="用 20 年歷史數據，比較 DCA、單筆投入、天選之人、地獄倒霉鬼的真實報酬率"
-          visual={<BacktestVisual />}
-          onClick={() => onNavigate('backtest')}
-        />
-        <FeatureCard
-          icon={'\u2696\uFE0F'}
-          question="現在算貴還便宜？"
-          title="樂活五線譜"
-          description="對數線性迴歸 + 標準差帶，一眼判斷股價在歷史中的相對位置"
-          visual={<LohasVisual />}
-          onClick={() => onNavigate('lohas')}
-        />
-        <FeatureCard
-          icon={'\u{1F4C5}'}
-          question="退休現金流怎麼造？"
-          title="樂退月月配"
-          description="3 支高股息 ETF 配息月份互補，4 種配置策略試算你的退休被動收入"
-          visual={<MonthlyVisual />}
-          onClick={() => onNavigate('etf')}
-        />
+      {/* ─── Feature Cards ────────────────────────────────────────────── */}
+      <section className="lp-cards-section">
+        <div className="lp-cards-grid">
+          {/* Card 1: Backtest */}
+          <div className="lp-card" onClick={() => onNavigate('backtest')} role="button" tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('backtest') }}>
+            <span className="material-symbols-outlined lp-card-icon">help</span>
+            <h3 className="lp-card-question">我該什麼時候買？</h3>
+            <span className="material-symbols-outlined lp-card-arrow">south</span>
+            <div className="lp-card-title-bar">回測四策略</div>
+            <div className="lp-card-visual">
+              <div className="lp-visual-grid-4">
+                {[
+                  { icon: '\u26A1', label: '單筆投入' },
+                  { icon: '\u{1F451}', label: '天選之人' },
+                  { icon: '\u{1F4C5}', label: '每月定額' },
+                  { icon: '\u{1F494}', label: '地獄倒霉鬼' },
+                ].map((s) => (
+                  <div key={s.label} className="lp-visual-item">
+                    <span className="lp-visual-item-icon">{s.icon}</span>
+                    <span className="lp-visual-item-label">{s.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: LOHAS */}
+          <div className="lp-card" onClick={() => onNavigate('lohas')} role="button" tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('lohas') }}>
+            <span className="material-symbols-outlined lp-card-icon">balance</span>
+            <h3 className="lp-card-question">現在算貴還便宜？</h3>
+            <span className="material-symbols-outlined lp-card-arrow">south</span>
+            <div className="lp-card-title-bar">樂活五線譜</div>
+            <div className="lp-card-visual">
+              <svg viewBox="0 0 220 130" fill="none" style={{ width: '100%', height: 130 }}>
+                <line x1="15" y1="15" x2="175" y2="10" stroke="#ef4444" strokeWidth="1.2" opacity="0.5" />
+                <line x1="15" y1="35" x2="175" y2="28" stroke="#f97316" strokeWidth="1.2" opacity="0.5" />
+                <line x1="15" y1="58" x2="175" y2="48" stroke="#9ca3af" strokeWidth="1.2" opacity="0.6" />
+                <line x1="15" y1="80" x2="175" y2="68" stroke="#3b82f6" strokeWidth="1.2" opacity="0.5" />
+                <line x1="15" y1="100" x2="175" y2="85" stroke="#8b5cf6" strokeWidth="1.2" opacity="0.5" />
+                <text x="178" y="14" fontSize="8" fill="var(--text-muted)">+2SD 昂貴</text>
+                <text x="178" y="32" fontSize="8" fill="var(--text-muted)">+1SD 偏貴</text>
+                <text x="178" y="52" fontSize="8" fill="var(--text-muted)">平均線 合理</text>
+                <text x="178" y="72" fontSize="8" fill="var(--text-muted)">-1SD 便宜</text>
+                <text x="178" y="89" fontSize="8" fill="var(--text-muted)">-2SD 低估</text>
+                <polyline points="15,90 35,60 55,80 75,50 95,75 115,40 135,65 155,30 175,20"
+                  stroke="var(--accent)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Card 3: Monthly Dividend */}
+          <div className="lp-card" onClick={() => onNavigate('etf')} role="button" tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('etf') }}>
+            <span className="material-symbols-outlined lp-card-icon">calendar_month</span>
+            <h3 className="lp-card-question">退休現金流怎麼造？</h3>
+            <span className="material-symbols-outlined lp-card-arrow">south</span>
+            <div className="lp-card-title-bar">樂退月月配</div>
+            <div className="lp-card-visual">
+              <div className="lp-month-grid">
+                {Array.from({ length: 12 }, (_, i) => {
+                  const colors = ['#34d399', '#38bdf8', '#fbbf24']
+                  const c = colors[i % 3]
+                  return (
+                    <div key={i} className="lp-month-cell" style={{ borderColor: `${c}60`, background: `${c}15` }}>
+                      <span className="lp-month-dollar" style={{ color: c }}>$</span>
+                      <span className="lp-month-label">{i + 1}月</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* Core concept */}
-      <div className="landing-concept">
-        <span className="landing-concept-icon">{'\u{1F4A1}'}</span>
-        核心觀念：投資沒有完美時機，但有可以驗證的策略。
-      </div>
+      {/* ─── Core Concept ─────────────────────────────────────────────── */}
+      <section className="lp-concept-section">
+        <div className="lp-concept-banner">
+          {'\u{1F4A1}'} 核心觀念：投資沒有完美時機，但有可以驗證的策略。
+        </div>
+      </section>
+
+      {/* ─── Stats Bento ──────────────────────────────────────────────── */}
+      <section className="lp-stats-section">
+        <div className="lp-stats-grid">
+          <div className="lp-stats-main">
+            <span className="lp-stats-eyebrow">ADVANCED ANALYTICS</span>
+            <h2 className="lp-stats-headline">
+              掌握全市場 20+ 年<br />深度回測引擎
+            </h2>
+            <div className="lp-stats-numbers">
+              <div className="lp-stat-item">
+                <div className="lp-stat-value">99.8%</div>
+                <div className="lp-stat-label">數據準確度</div>
+              </div>
+              <div className="lp-stat-item">
+                <div className="lp-stat-value">5,000+</div>
+                <div className="lp-stat-label">模擬組合</div>
+              </div>
+              <div className="lp-stat-item lp-stat-hide-mobile">
+                <div className="lp-stat-value">15ms</div>
+                <div className="lp-stat-label">即時運算</div>
+              </div>
+            </div>
+          </div>
+          <div className="lp-stats-insight">
+            <h4 className="lp-insight-title">今日市場觀察</h4>
+            <p className="lp-insight-body">
+              目前的市場五線譜顯示大部分藍籌股處於「均值」區間，定期定額（DCA）仍然是當前波動環境下的最佳策略。
+            </p>
+            <button className="lp-insight-link" onClick={() => onNavigate('lohas')}>
+              查看完整分析 &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

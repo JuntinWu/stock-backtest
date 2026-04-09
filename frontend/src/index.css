@@ -1292,198 +1292,334 @@ body::after {
   .landing-title { font-size: 1.6rem !important; }
 }
 
-/* ─── Landing Page ─────────────────────────────────────────────────────── */
-.landing {
+/* ─── Landing Page — Precision Navigator ───────────────────────────────── */
+.lp { max-width: 1200px; margin: 0 auto; }
+
+/* Hero */
+.lp-hero {
+  position: relative;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+  overflow: hidden;
+}
+
+.lp-hero-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.lp-hero-inner { position: relative; z-index: 1; }
+
+.lp-pill {
+  display: inline-flex;
+  font-family: 'Space Grotesk', var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 0.45rem 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.lp-title {
+  font-family: 'Manrope', var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.lp-title-gradient {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lp-subtitle {
+  font-family: 'Inter', var(--font-body);
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+
+.lp-cta-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lp-cta-primary {
+  font-family: 'Manrope', var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: all 0.2s;
+}
+.lp-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px color-mix(in srgb, var(--accent) 40%, transparent); }
+
+.lp-cta-secondary {
+  font-family: 'Manrope', var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.lp-cta-secondary:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ─── Feature Cards Section ────────────────────────────────────────────── */
+.lp-cards-section {
+  background: var(--bg-secondary);
+  padding: 3.5rem 1.5rem;
+}
+
+.lp-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
   max-width: 1100px;
   margin: 0 auto;
 }
 
-.landing-hero {
-  position: relative;
-  text-align: center;
-  padding: 5rem 2rem 3.5rem;
-  min-height: 380px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.landing-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-card);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 0.4rem 1rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-bottom: 2rem;
-}
-
-.landing-status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #34d399;
-  box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.landing-title {
-  font-family: var(--font-display);
-  font-size: 2.8rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin-bottom: 0.75rem;
-  position: relative;
-  z-index: 1;
-}
-
-.landing-subtitle {
-  font-family: var(--font-body);
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 1;
-}
-
-.landing-source {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.5rem 1.5rem;
-  position: relative;
-  z-index: 1;
-}
-
-/* ─── Feature Cards ────────────────────────────────────────────────────── */
-.landing-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-  padding: 0 1rem 2rem;
-}
-
-.landing-card {
-  background: var(--bg-card);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.75rem 1.5rem;
+.lp-card {
+  background: var(--bg-card-solid);
+  border-radius: 14px;
+  padding: 2rem 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
 }
-
-.landing-card:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-card-hover);
+.lp-card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
   transform: translateY(-4px);
 }
 
-.landing-card-icon {
-  font-size: 2.2rem;
-  margin-bottom: 0.25rem;
+.lp-card-icon {
+  font-size: 48px !important;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-variation-settings: 'FILL' 0, 'wght' 300;
 }
 
-.landing-card-question {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
+.lp-card-question {
+  font-family: 'Manrope', var(--font-display);
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
+  margin-bottom: 0.75rem;
 }
 
-.landing-card-arrow {
-  font-size: 1.2rem;
+.lp-card-arrow {
+  font-size: 32px !important;
   color: var(--accent);
-  margin: 0.15rem 0;
+  margin-bottom: 0.75rem;
+  animation: bounce-arrow 2s ease-in-out infinite;
 }
 
-.landing-card-title {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--accent);
-  background: var(--accent-glow);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  border-radius: var(--radius);
-  padding: 0.5rem 1.5rem;
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+.lp-card-title-bar {
+  font-family: 'Manrope', var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 10px;
+  padding: 0.55rem 0;
   width: 100%;
+  margin-bottom: 1rem;
 }
 
-.landing-card-visual {
+.lp-card-visual {
   width: 100%;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
 }
 
-.landing-card-desc {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  min-height: 2.4rem;
+/* Card 1 — 4-item grid */
+.lp-visual-grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
 }
 
-.landing-card-cta {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
+.lp-visual-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.4rem;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.lp-visual-item-icon { font-size: 1.3rem; }
+.lp-visual-item-label {
+  font-family: 'Inter', var(--font-body);
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--accent);
-  margin-top: 0.5rem;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: all 0.3s ease;
+  color: var(--text-secondary);
 }
 
-.landing-card:hover .landing-card-cta {
-  opacity: 1;
-  transform: translateY(0);
+/* Card 3 — month grid */
+.lp-month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
 }
+
+.lp-month-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0.2rem;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.lp-month-dollar { font-weight: 700; font-size: 0.85rem; }
+.lp-month-label { font-size: 0.55rem; color: var(--text-muted); }
 
 /* ─── Core Concept Banner ──────────────────────────────────────────────── */
-.landing-concept {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 600;
+.lp-concept-section { padding: 3rem 1.5rem; }
+
+.lp-concept-banner {
+  max-width: 700px;
+  margin: 0 auto;
+  font-family: 'Manrope', var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--green);
   background: var(--green-glow);
-  border: 1px solid var(--green-dim);
-  border-radius: 999px;
-  padding: 0.85rem 2rem;
-  margin: 0 1rem 2rem;
+  border: 2px solid color-mix(in srgb, var(--green) 30%, transparent);
+  border-radius: 9999px;
+  padding: 1rem 2rem;
   text-align: center;
 }
 
-.landing-concept-icon {
-  font-size: 1.1rem;
+/* ─── Stats Bento Section ──────────────────────────────────────────────── */
+.lp-stats-section { padding: 0 1.5rem 4rem; }
+
+.lp-stats-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-/* ─── Inner Page Header ────────────────────────────────────────────────── */
-.inner-header {
-  margin-bottom: 0.5rem;
+.lp-stats-main {
+  background: var(--accent);
+  color: #fff;
+  padding: 3rem;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
 }
+
+.lp-stats-eyebrow {
+  font-family: 'Space Grotesk', var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  opacity: 0.7;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.lp-stats-headline {
+  font-family: 'Manrope', var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 2rem;
+}
+
+.lp-stats-numbers {
+  display: flex;
+  gap: 3rem;
+}
+
+.lp-stat-value {
+  font-family: 'Space Grotesk', var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.lp-stat-label {
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+.lp-stats-insight {
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.lp-insight-title {
+  font-family: 'Manrope', var(--font-display);
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.lp-insight-body {
+  font-family: 'Inter', var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.lp-insight-link {
+  font-family: 'Manrope', var(--font-display);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: opacity 0.2s;
+}
+.lp-insight-link:hover { opacity: 0.7; }
+
+/* ─── Inner Page Header ────────────────────────────────────────────────── */
+.inner-header { margin-bottom: 0.5rem; }
 
 .back-btn {
   display: inline-flex;
@@ -1498,18 +1634,32 @@ body::after {
   padding: 0.5rem 0;
   transition: color 0.2s;
 }
-
-.back-btn:hover {
-  color: var(--accent);
-}
+.back-btn:hover { color: var(--accent); }
 
 .back-brand {
-  font-family: var(--font-display);
+  font-family: 'Manrope', var(--font-display);
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--text-primary);
 }
+.back-btn:hover .back-brand { color: var(--accent); }
 
-.back-btn:hover .back-brand {
-  color: var(--accent);
+/* ─── Landing Page RWD ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .lp-hero { padding: 3.5rem 1.25rem 2.5rem; }
+  .lp-subtitle { font-size: 0.95rem; }
+  .lp-cards-section { padding: 2rem 1rem; }
+  .lp-cards-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .lp-card { padding: 1.5rem 1.25rem; }
+  .lp-card-visual { display: none; }
+  .lp-card-title-bar { margin-bottom: 0; }
+  .lp-concept-section { padding: 2rem 1rem; }
+  .lp-concept-banner { font-size: 0.85rem; padding: 0.85rem 1.25rem; }
+  .lp-stats-section { padding: 0 1rem 3rem; }
+  .lp-stats-grid { grid-template-columns: 1fr; }
+  .lp-stats-main { padding: 2rem 1.5rem; }
+  .lp-stats-numbers { gap: 1.5rem; }
+  .lp-stat-value { font-size: 1.4rem; }
+  .lp-stat-hide-mobile { display: none; }
+  .lp-stats-insight { padding: 1.5rem; }
 }
