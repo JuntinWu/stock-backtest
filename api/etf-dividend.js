@@ -1,4 +1,4 @@
-const { calculate } = require('./_lib/etf-dividend');
+const { calculateAll } = require('./_lib/etf-dividend');
 
 module.exports = function handler(req, res) {
   if (req.method !== 'POST') {
@@ -21,6 +21,6 @@ module.exports = function handler(req, res) {
     }
   }
 
-  const result = calculate(targetMonthly, etfs);
+  const result = calculateAll(targetMonthly, etfs);
   res.json(result);
 };

@@ -73,7 +73,21 @@ export interface CapitalResult {
   allocations: ETFAllocation[];
   totalAnnualDividend: number;
   totalMonthlyDividend: number;
+  totalInvested: number;
   achieveTarget: boolean;
+}
+
+export type AllocationStrategy = 'equal' | 'max-dividend' | 'yield-weighted' | 'equal-monthly'
+
+export interface StrategyResultData {
+  capitalResults: CapitalResult[];
+  requiredCapital: number | null;
+}
+
+export interface ETFCalculationResponse {
+  targetMonthly: number;
+  etfs: ETFInfo[];
+  strategies: Record<AllocationStrategy, StrategyResultData>;
 }
 
 export interface ETFCalculationResult {

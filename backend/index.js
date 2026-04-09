@@ -334,7 +334,7 @@ app.get('/api/prices', async (req, res) => {
 });
 
 // ─── LOHAS Five Lines API ──────────────────────────────────────────────────
-const { calculate: calculateDividend } = require('../api/_lib/etf-dividend');
+const { calculateAll } = require('../api/_lib/etf-dividend');
 
 app.post('/api/etf-dividend', (req, res) => {
   const { targetMonthly, etfs } = req.body;
@@ -353,7 +353,7 @@ app.post('/api/etf-dividend', (req, res) => {
     }
   }
 
-  const result = calculateDividend(targetMonthly, etfs);
+  const result = calculateAll(targetMonthly, etfs);
   res.json(result);
 });
 

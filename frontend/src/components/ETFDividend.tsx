@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, ReferenceLine,
 } from 'recharts'
-import type { ETFInfo, ETFCalculationResult } from '../types'
+import type { ETFInfo, ETFCalculationResult, ETFCalculationResponse, AllocationStrategy } from '../types'
 
 // ─── Default Data ────────────────────────────────────────────────────────────
 
@@ -38,6 +38,13 @@ const PRESETS = [
 
 const Q_LABELS = ['Q1', 'Q2', 'Q3', 'Q4']
 
+const STRATEGY_OPTIONS: { key: AllocationStrategy; label: string; desc: string; emoji: string }[] = [
+  { key: 'equal', label: '均等分配', desc: '等額分配資金', emoji: '\u2696\uFE0F' },
+  { key: 'max-dividend', label: '最大配息', desc: '集中高殖利率', emoji: '\u{1F680}' },
+  { key: 'yield-weighted', label: '殖利率加權', desc: '按殖利率比例', emoji: '\u{1F4CA}' },
+  { key: 'equal-monthly', label: '月月均配', desc: '每月配息均等', emoji: '\u{1F4C5}' },
+]
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatNum(n: number) {
@@ -49,7 +56,7 @@ function formatWan(n: number) {
   return formatNum(n)
 }
 
-async function fetchCalculation(targetMonthly: number, etfs: ETFInfo[]): Promise<ETFCalculationResult> {
+async function fetchCalculation(targetMonthly: number, etfs: ETFInfo[]): Promise<ETFCalculationResponse> {
   const res = await fetch('/api/etf-dividend', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -100,7 +107,7 @@ function ETFIntro() {
 
 // ─── Form ────────────────────────────────────────────────────────────────────
 
-function ETFForm({ onCalculate, onError }: { onCalculate: (r: ETFCalculationResult) => void; onError: (msg: string) => void }) {
+function ETFForm({ onCalculate, onError }: { onCalculate: (r: ETFCalculationResponse) => void; onError: (msg: string) => void }) {
   const [targetMonthly, setTargetMonthly] = useState(40000)
   const [etfs, setETFs] = useState<ETFInfo[]>(DEFAULT_ETFS)
   const [loading, setLoading] = useState(false)
@@ -206,6 +213,65 @@ function ETFForm({ onCalculate, onError }: { onCalculate: (r: ETFCalculationResu
         {loading ? '\u23F3 計算中...' : '\u{1F4CA} 開始計算'}
       </button>
     </form>
+  )
+}
+
+// ─── Strategy Comparison ────────────────────────────────────────────────────
+
+function StrategyComparison({
+  response,
+  activeStrategy,
+  onSelect,
+}: {
+  response: ETFCalculationResponse
+  activeStrategy: AllocationStrategy
+  onSelect: (s: AllocationStrategy) => void
+}) {
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <span style={{ color: 'var(--accent)', fontSize: '0.6rem' }}>{'\u25B6'}</span> 配置策略比較（點擊切換）
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
+        {STRATEGY_OPTIONS.map((opt) => {
+          const data = response.strategies[opt.key]
+          const isActive = activeStrategy === opt.key
+          return (
+            <div
+              key={opt.key}
+              onClick={() => onSelect(opt.key)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(opt.key) }}
+              style={{
+                cursor: 'pointer',
+                background: isActive ? 'var(--accent-glow)' : 'var(--bg-card)',
+                border: `2px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`,
+                borderRadius: 'var(--radius-lg)',
+                padding: '1rem 0.75rem',
+                textAlign: 'center',
+                transition: 'all 0.2s',
+                boxShadow: isActive ? 'var(--shadow-card)' : 'none',
+              }}
+            >
+              <div style={{ fontSize: '1.4rem', marginBottom: '0.35rem' }}>{opt.emoji}</div>
+              <div style={{ fontWeight: 700, fontSize: '0.82rem', marginBottom: '0.15rem', color: isActive ? 'var(--accent)' : 'var(--text-primary)' }}>
+                {opt.label}
+              </div>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                {opt.desc}
+              </div>
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: data.requiredCapital ? 'var(--green)' : 'var(--red)' }}>
+                {data.requiredCapital ? formatWan(data.requiredCapital) : '> 5,000\u842C'}
+              </div>
+              <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+                最低達標本金
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -346,13 +412,13 @@ function ResultTables({ result }: { result: ETFCalculationResult }) {
             </div>
 
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-              每支 ETF 分配 {formatWan(cr.capitalPerETF)}
+              實際投入 {formatWan(cr.totalInvested)}（使用率 {(cr.totalInvested / cr.capital * 100).toFixed(1)}%）
             </div>
 
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '0.75rem' }}>
               <thead>
                 <tr>
-                  {['ETF', '股價', '張數', '年配息', '配息月'].map((h, idx) => (
+                  {['ETF', '股價', '張數', '投入金額', '年配息', '配息月'].map((h, idx) => (
                     <th key={h} style={{ background: 'var(--accent-glow)', padding: '0.45rem 0.5rem', textAlign: idx === 0 ? 'left' : 'right', fontSize: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--border)' }}>
                       {h}
                     </th>
@@ -369,6 +435,7 @@ function ResultTables({ result }: { result: ETFCalculationResult }) {
                       </td>
                       <td style={{ padding: '0.45rem 0.5rem', textAlign: 'right', borderBottom: '1px solid var(--border)', fontVariantNumeric: 'tabular-nums' }}>{alloc.price.toFixed(2)}</td>
                       <td style={{ padding: '0.45rem 0.5rem', textAlign: 'right', borderBottom: '1px solid var(--border)', fontVariantNumeric: 'tabular-nums' }}>{alloc.shares}</td>
+                      <td style={{ padding: '0.45rem 0.5rem', textAlign: 'right', borderBottom: '1px solid var(--border)', fontVariantNumeric: 'tabular-nums', color: 'var(--text-secondary)' }}>{formatWan(alloc.investedAmount)}</td>
                       <td style={{ padding: '0.45rem 0.5rem', textAlign: 'right', borderBottom: '1px solid var(--border)', fontVariantNumeric: 'tabular-nums', color: 'var(--green)' }}>{formatNum(Math.round(alloc.annualDividend))}</td>
                       <td style={{ padding: '0.45rem 0.5rem', textAlign: 'right', borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>{etfInfo?.dividendMonths}</td>
                     </tr>
@@ -378,6 +445,7 @@ function ResultTables({ result }: { result: ETFCalculationResult }) {
                   <td style={{ padding: '0.55rem 0.5rem', textAlign: 'left', fontWeight: 700, borderTop: '2px solid var(--border-bright)' }}>合計</td>
                   <td style={{ borderTop: '2px solid var(--border-bright)' }}></td>
                   <td style={{ padding: '0.55rem 0.5rem', textAlign: 'right', fontWeight: 700, borderTop: '2px solid var(--border-bright)', fontVariantNumeric: 'tabular-nums' }}>{cr.allocations.reduce((s, a) => s + a.shares, 0)}</td>
+                  <td style={{ padding: '0.55rem 0.5rem', textAlign: 'right', fontWeight: 700, borderTop: '2px solid var(--border-bright)', fontVariantNumeric: 'tabular-nums', color: 'var(--text-secondary)' }}>{formatWan(cr.totalInvested)}</td>
                   <td style={{ padding: '0.55rem 0.5rem', textAlign: 'right', fontWeight: 700, borderTop: '2px solid var(--border-bright)', fontVariantNumeric: 'tabular-nums', color: 'var(--green)' }}>{formatNum(Math.round(cr.totalAnnualDividend))}</td>
                   <td style={{ borderTop: '2px solid var(--border-bright)' }}></td>
                 </tr>
@@ -400,13 +468,20 @@ function ResultTables({ result }: { result: ETFCalculationResult }) {
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function ETFDividend() {
-  const [result, setResult] = useState<ETFCalculationResult | null>(null)
+  const [response, setResponse] = useState<ETFCalculationResponse | null>(null)
+  const [activeStrategy, setActiveStrategy] = useState<AllocationStrategy>('equal')
   const [error, setError] = useState('')
+
+  const activeResult: ETFCalculationResult | null = response ? {
+    targetMonthly: response.targetMonthly,
+    etfs: response.etfs,
+    ...response.strategies[activeStrategy],
+  } : null
 
   return (
     <>
       <ETFIntro />
-      <ETFForm onCalculate={(r) => { setResult(r); setError('') }} onError={setError} />
+      <ETFForm onCalculate={(r) => { setResponse(r); setError('') }} onError={setError} />
       {error && (
         <div style={{
           background: 'var(--red-glow)', border: '1px solid var(--red-dim)',
@@ -416,12 +491,13 @@ export default function ETFDividend() {
           {error}
         </div>
       )}
-      {result && (
+      {response && activeResult && (
         <div className="results-enter">
-          <SummaryCards result={result} />
-          <InsightBox result={result} />
-          <DividendChart result={result} />
-          <ResultTables result={result} />
+          <StrategyComparison response={response} activeStrategy={activeStrategy} onSelect={setActiveStrategy} />
+          <SummaryCards result={activeResult} />
+          <InsightBox result={activeResult} />
+          <DividendChart result={activeResult} />
+          <ResultTables result={activeResult} />
           <p className="disclaimer">
             {'\u26A0'} 本工具使用使用者輸入之股價與年配息金額進行試算，實際配息金額可能因除息日、
             填息情況等因素而有所不同。本工具結果僅供參考，不構成任何投資建議。
