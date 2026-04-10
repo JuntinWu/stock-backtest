@@ -30,81 +30,167 @@ export default function LandingPage({ onNavigate }: Props) {
         </div>
       </section>
 
-      {/* ─── Feature Cards ────────────────────────────────────────────── */}
-      <section className="lp-cards-section">
-        <div className="lp-cards-grid">
-          {/* Card 1: Backtest */}
-          <div className="lp-card" onClick={() => onNavigate('backtest')} role="button" tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('backtest') }}>
-            <span className="material-symbols-outlined lp-card-icon">help</span>
-            <h3 className="lp-card-question">我該什麼時候買？</h3>
-            <span className="material-symbols-outlined lp-card-arrow">south</span>
-            <div className="lp-card-title-bar">回測四策略</div>
-            <div className="lp-card-visual">
-              <div className="lp-visual-grid-4">
-                {[
-                  { icon: '\u26A1', label: '單筆投入' },
-                  { icon: '\u{1F451}', label: '天選之人' },
-                  { icon: '\u{1F4C5}', label: '每月定額' },
-                  { icon: '\u{1F494}', label: '地獄倒霉鬼' },
-                ].map((s) => (
-                  <div key={s.label} className="lp-visual-item">
-                    <span className="lp-visual-item-icon">{s.icon}</span>
-                    <span className="lp-visual-item-label">{s.label}</span>
+      {/* ─── Magazine Editorial Sections ──────────────────────────────── */}
+      <section className="lp-mag">
+        {/* Article 1: Backtest — text left, visual right */}
+        <article className="lp-mag-row" onClick={() => onNavigate('backtest')} role="button" tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('backtest') }}>
+          <div className="lp-mag-text">
+            <span className="material-symbols-outlined lp-mag-icon">help</span>
+            <h2 className="lp-mag-title">我該什麼時候買？</h2>
+            <div className="lp-mag-divider" />
+            <p className="lp-mag-body">
+              數據化投資的第一步在於時機。透過回測四策略，我們解構市場循環與進場點的數學邏輯，讓投資不再是猜測，而是機率。
+            </p>
+            <div className="lp-mag-insight">
+              <span className="material-symbols-outlined">south</span>
+              <span>INSIGHT: BACKTESTING METHODOLOGY</span>
+            </div>
+          </div>
+          <div className="lp-mag-visual-wrap">
+            <div className="lp-dash">
+              <div className="lp-dash-header">
+                <span className="lp-dash-eyebrow">STRATEGY DASHBOARD</span>
+                <span className="lp-dash-tag">回測四策略</span>
+              </div>
+              <div className="lp-dash-grid">
+                <div className="lp-dash-cell">
+                  <div className="lp-chart-bars">
+                    <div className="bar" style={{ height: '50%', background: 'var(--bg-secondary)' }} />
+                    <div className="bar" style={{ height: '66%', background: 'var(--bg-secondary)' }} />
+                    <div className="bar" style={{ height: '100%', background: 'var(--accent)' }} />
+                  </div>
+                  <p className="lp-dash-label">單筆投入</p>
+                </div>
+                <div className="lp-dash-cell">
+                  <div className="lp-chart-bars">
+                    <div className="bar wide" style={{ height: '33%', background: 'var(--bg-secondary)' }} />
+                    <div className="bar wide" style={{ height: '75%', background: 'var(--accent)' }} />
+                    <div className="bar wide" style={{ height: '50%', background: 'var(--bg-secondary)' }} />
+                  </div>
+                  <p className="lp-dash-label">年度最低點</p>
+                </div>
+                <div className="lp-dash-cell">
+                  <div className="lp-chart-curve">
+                    <svg viewBox="0 0 60 30" fill="none" style={{ width: 60, height: 30 }}>
+                      <path d="M0 25 Q15 28 30 15 T60 5" stroke="var(--accent)" strokeWidth="2.5" fill="none" />
+                      <circle cx="60" cy="5" r="3" fill="var(--accent)" />
+                    </svg>
+                  </div>
+                  <p className="lp-dash-label">不擇時DCA</p>
+                </div>
+                <div className="lp-dash-cell">
+                  <div className="lp-chart-bars">
+                    <div className="bar" style={{ height: '25%', background: 'var(--bg-secondary)' }} />
+                    <div className="bar" style={{ height: '50%', background: 'var(--bg-secondary)' }} />
+                    <div className="bar" style={{ height: '75%', background: 'var(--bg-secondary)' }} />
+                    <div className="bar" style={{ height: '100%', background: 'var(--accent)' }} />
+                  </div>
+                  <p className="lp-dash-label">年度最高點</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        {/* Article 2: LOHAS — visual left, text right */}
+        <article className="lp-mag-row lp-mag-row-reverse" onClick={() => onNavigate('lohas')} role="button" tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('lohas') }}>
+          <div className="lp-mag-visual-wrap">
+            <div className="lp-dash">
+              <div className="lp-dash-header">
+                <span className="lp-dash-eyebrow">MARKET VALUATION LINE</span>
+                <span className="lp-dash-tag">樂活五線譜</span>
+              </div>
+              <div className="lp-lohas-chart">
+                <div className="lp-lohas-lines">
+                  {[
+                    { label: '+2SD 昂貴', emphasis: false },
+                    { label: '+1SD 偏貴', emphasis: false },
+                    { label: '平均線 合理', emphasis: true },
+                    { label: '-1SD 便宜', emphasis: false },
+                    { label: '-2SD 低估', emphasis: false },
+                  ].map((l) => (
+                    <div key={l.label} className="lp-lohas-line-row">
+                      <div className={`lp-lohas-hline ${l.emphasis ? 'emphasis' : ''}`} />
+                      <span className={`lp-lohas-label ${l.emphasis ? 'emphasis' : ''}`}>{l.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <svg className="lp-lohas-path" viewBox="0 0 400 200" preserveAspectRatio="none" fill="none">
+                  <path d="M0 160 L40 120 L80 145 L120 90 L160 130 L200 70 L240 110 L280 50 L320 100 L360 40 L400 80"
+                    stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="lp-mag-text">
+            <span className="material-symbols-outlined lp-mag-icon">balance</span>
+            <h2 className="lp-mag-title">現在算貴還便宜？</h2>
+            <div className="lp-mag-divider" />
+            <p className="lp-mag-body">
+              利用統計學中的均值回歸理論，我們將市場情緒量化為「樂活五線譜」。一眼看穿目前的價格溢價程度，掌握最有利的配置空間。
+            </p>
+            <div className="lp-mag-insight">
+              <span className="material-symbols-outlined">south</span>
+              <span>ANALYSIS: MEAN REVERSION MATRIX</span>
+            </div>
+          </div>
+        </article>
+
+        {/* Article 3: Monthly Dividend — text left, visual right */}
+        <article className="lp-mag-row" onClick={() => onNavigate('etf')} role="button" tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('etf') }}>
+          <div className="lp-mag-text">
+            <span className="material-symbols-outlined lp-mag-icon">calendar_month</span>
+            <h2 className="lp-mag-title">退休現金流怎麼造？</h2>
+            <div className="lp-mag-divider" />
+            <p className="lp-mag-body">
+              穩定的被動收入是投資的終極堡壘。透過「樂退月月配」組合，我們精算出最佳化配息週期，確保資源如流水般精準灌溉您的退休藍圖。
+            </p>
+            <div className="lp-mag-insight">
+              <span className="material-symbols-outlined">south</span>
+              <span>INSIGHT: PASSIVE INCOME STREAMS</span>
+            </div>
+          </div>
+          <div className="lp-mag-visual-wrap">
+            <div className="lp-dash">
+              <div className="lp-dash-header">
+                <span className="lp-dash-eyebrow">CASH FLOW PROJECTION</span>
+                <span className="lp-dash-tag">樂退月月配</span>
+              </div>
+              <div className="lp-cash-top">
+                <div className="lp-cash-source">
+                  <div className="lp-cash-vessel">
+                    <span className="material-symbols-outlined lp-cash-arrow">keyboard_double_arrow_down</span>
+                    <div className="lp-cash-coin">$</div>
+                  </div>
+                  <p className="lp-cash-caption">複利資源</p>
+                </div>
+                <span className="material-symbols-outlined lp-cash-flow">trending_flat</span>
+                <div className="lp-cash-stats">
+                  <div>
+                    <p className="lp-cash-stat-value">3.3%</p>
+                    <p className="lp-cash-stat-label">殖利率</p>
+                  </div>
+                  <div className="lp-cash-divider" />
+                  <div>
+                    <p className="lp-cash-stat-value">12</p>
+                    <p className="lp-cash-stat-label">月月有</p>
+                  </div>
+                </div>
+              </div>
+              <div className="lp-cash-months">
+                {['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'].map((m) => (
+                  <div key={m} className="lp-cash-month">
+                    <span className="lp-cash-month-dollar">$</span>
+                    <span className="lp-cash-month-label">{m}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-
-          {/* Card 2: LOHAS */}
-          <div className="lp-card" onClick={() => onNavigate('lohas')} role="button" tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('lohas') }}>
-            <span className="material-symbols-outlined lp-card-icon">balance</span>
-            <h3 className="lp-card-question">現在算貴還便宜？</h3>
-            <span className="material-symbols-outlined lp-card-arrow">south</span>
-            <div className="lp-card-title-bar">樂活五線譜</div>
-            <div className="lp-card-visual">
-              <svg viewBox="0 0 220 130" fill="none" style={{ width: '100%', height: 130 }}>
-                <line x1="15" y1="15" x2="175" y2="10" stroke="#ef4444" strokeWidth="1.2" opacity="0.5" />
-                <line x1="15" y1="35" x2="175" y2="28" stroke="#f97316" strokeWidth="1.2" opacity="0.5" />
-                <line x1="15" y1="58" x2="175" y2="48" stroke="#9ca3af" strokeWidth="1.2" opacity="0.6" />
-                <line x1="15" y1="80" x2="175" y2="68" stroke="#3b82f6" strokeWidth="1.2" opacity="0.5" />
-                <line x1="15" y1="100" x2="175" y2="85" stroke="#8b5cf6" strokeWidth="1.2" opacity="0.5" />
-                <text x="178" y="14" fontSize="8" fill="var(--text-muted)">+2SD 昂貴</text>
-                <text x="178" y="32" fontSize="8" fill="var(--text-muted)">+1SD 偏貴</text>
-                <text x="178" y="52" fontSize="8" fill="var(--text-muted)">平均線 合理</text>
-                <text x="178" y="72" fontSize="8" fill="var(--text-muted)">-1SD 便宜</text>
-                <text x="178" y="89" fontSize="8" fill="var(--text-muted)">-2SD 低估</text>
-                <polyline points="15,90 35,60 55,80 75,50 95,75 115,40 135,65 155,30 175,20"
-                  stroke="var(--accent)" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Card 3: Monthly Dividend */}
-          <div className="lp-card" onClick={() => onNavigate('etf')} role="button" tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter') onNavigate('etf') }}>
-            <span className="material-symbols-outlined lp-card-icon">calendar_month</span>
-            <h3 className="lp-card-question">退休現金流怎麼造？</h3>
-            <span className="material-symbols-outlined lp-card-arrow">south</span>
-            <div className="lp-card-title-bar">樂退月月配</div>
-            <div className="lp-card-visual">
-              <div className="lp-month-grid">
-                {Array.from({ length: 12 }, (_, i) => {
-                  const colors = ['#34d399', '#38bdf8', '#fbbf24']
-                  const c = colors[i % 3]
-                  return (
-                    <div key={i} className="lp-month-cell" style={{ borderColor: `${c}60`, background: `${c}15` }}>
-                      <span className="lp-month-dollar" style={{ color: c }}>$</span>
-                      <span className="lp-month-label">{i + 1}月</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
+        </article>
       </section>
 
       {/* ─── Core Concept ─────────────────────────────────────────────── */}
