@@ -6,6 +6,7 @@ import ResultChart from './components/ResultChart'
 import LOHASAnalysis from './components/LOHASAnalysis'
 import ETFDividend from './components/ETFDividend'
 import LandingPage from './components/LandingPage'
+import Nav from './components/Nav'
 import AdSlot from './components/AdSlot'
 import Disclaimer from './components/Disclaimer'
 
@@ -117,55 +118,13 @@ export default function App() {
   }
 
   return (
-    <div className="app">
-      {/* Theme Toggle */}
-      <div className="theme-toggle" onClick={toggleTheme} title="切換明暗模式">
-        <span className="toggle-label toggle-icon-sun">&#9728;&#65039;</span>
-        <div className="toggle-track">
-          <div className="toggle-knob" />
-        </div>
-        <span className="toggle-label toggle-icon-moon">&#127769;</span>
-      </div>
+    <>
+      {/* Shared Nav (full-width, outside .app container) */}
+      <Nav activeView={view} onNavigate={setView} onToggleTheme={toggleTheme} />
 
+    <div className="app">
       {/* Landing Page */}
       {isLanding && <LandingPage onNavigate={(t) => setView(t)} />}
-
-      {/* Inner Pages */}
-      {!isLanding && (
-        <>
-          {/* Compact Header */}
-          <div className="inner-header">
-            <button className="back-btn" onClick={() => setView('landing')}>
-              &larr; <span className="back-brand">Stock<span className="accent">Pilot</span></span>
-            </button>
-          </div>
-
-          {/* Tabs */}
-          <div className="tab-bar-wrap">
-            <div className="tab-bar">
-              <button
-                className={`tab-btn ${tab === 'backtest' ? 'active' : ''}`}
-                onClick={() => setView('backtest')}
-              >
-                <span className="tab-icon">&#128202;</span>回測分析
-              </button>
-              <button
-                className={`tab-btn ${tab === 'lohas' ? 'active' : ''}`}
-                onClick={() => setView('lohas')}
-              >
-                <span className="tab-icon">&#127925;</span>樂活五線譜
-              </button>
-              <button
-                className={`tab-btn ${tab === 'etf' ? 'active' : ''}`}
-                onClick={() => setView('etf')}
-              >
-                <span className="tab-icon">&#128176;</span>樂退月月配
-                <span className="tab-badge-new">NEW</span>
-              </button>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Backtest Tab */}
       {tab === 'backtest' && (
@@ -173,7 +132,7 @@ export default function App() {
           <div className="etf-intro" style={{
             background: 'var(--bg-card)', backdropFilter: 'var(--glass-blur)',
             border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
+            padding: '1.5rem', marginTop: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
           }}>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               &#128202; 什麼是「回測四策略」？
@@ -244,7 +203,7 @@ export default function App() {
           <div className="etf-intro" style={{
             background: 'var(--bg-card)', backdropFilter: 'var(--glass-blur)',
             border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
+            padding: '1.5rem', marginTop: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
           }}>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               &#127925; 什麼是「樂活五線譜」？
@@ -304,5 +263,6 @@ export default function App() {
 
       <Disclaimer open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
     </div>
+    </>
   )
 }

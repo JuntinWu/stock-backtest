@@ -200,36 +200,41 @@ export default function LandingPage({ onNavigate }: Props) {
         </div>
       </section>
 
-      {/* ─── Stats Bento ──────────────────────────────────────────────── */}
-      <section className="lp-stats-section">
-        <div className="lp-stats-grid">
-          <div className="lp-stats-main">
-            <span className="lp-stats-eyebrow">ADVANCED ANALYTICS</span>
-            <h2 className="lp-stats-headline">
+      {/* ─── Precision Engine Stats ───────────────────────────────────── */}
+      <section className="lp-engine-section">
+        <div className="lp-engine-grid">
+          <div className="lp-engine-main">
+            <div className="lp-engine-orb" />
+            <h4 className="lp-engine-eyebrow">PRECISION ENGINE</h4>
+            <h2 className="lp-engine-headline">
               掌握全市場 20+ 年<br />深度回測引擎
             </h2>
-            <div className="lp-stats-numbers">
-              <div className="lp-stat-item">
-                <div className="lp-stat-value">99.8%</div>
-                <div className="lp-stat-label">數據準確度</div>
+            <div className="lp-engine-stats">
+              <div className="lp-engine-stat">
+                <div className="lp-engine-stat-value">99.8%</div>
+                <div className="lp-engine-stat-label">ACCURACY</div>
               </div>
-              <div className="lp-stat-item">
-                <div className="lp-stat-value">5,000+</div>
-                <div className="lp-stat-label">模擬組合</div>
+              <div className="lp-engine-stat">
+                <div className="lp-engine-stat-value">5,000+</div>
+                <div className="lp-engine-stat-label">PORTFOLIOS</div>
               </div>
-              <div className="lp-stat-item lp-stat-hide-mobile">
-                <div className="lp-stat-value">15ms</div>
-                <div className="lp-stat-label">即時運算</div>
+              <div className="lp-engine-stat lp-engine-stat-hide-sm">
+                <div className="lp-engine-stat-value">15ms</div>
+                <div className="lp-engine-stat-label">REALTIME</div>
               </div>
             </div>
           </div>
-          <div className="lp-stats-insight">
-            <h4 className="lp-insight-title">今日市場觀察</h4>
-            <p className="lp-insight-body">
+          <div className="lp-engine-insight">
+            <h4 className="lp-engine-insight-title">
+              <span className="material-symbols-outlined">insights</span>
+              今日市場觀察
+            </h4>
+            <p className="lp-engine-insight-body">
               目前的市場五線譜顯示大部分藍籌股處於「均值」區間，定期定額（DCA）仍然是當前波動環境下的最佳策略。
             </p>
-            <button className="lp-insight-link" onClick={() => onNavigate('lohas')}>
-              查看完整分析 &rarr;
+            <button className="lp-engine-insight-link" onClick={() => onNavigate('lohas')}>
+              查看完整分析
+              <span className="material-symbols-outlined">arrow_forward</span>
             </button>
           </div>
         </div>

@@ -76,7 +76,7 @@ function ETFIntro() {
     <div className="etf-intro" style={{
       background: 'var(--bg-card)', backdropFilter: 'var(--glass-blur)',
       border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
-      padding: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
+      padding: '1.5rem', marginTop: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
     }}>
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         {'\u{1F3AF}'} 什麼是「樂退月月配」？

@@ -181,8 +181,11 @@ body::after {
   z-index: 1;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: 0 1.5rem 4rem;
 }
+
+/* Inner pages need top padding (Nav is sticky, full-width above) */
+.app:has(.inner-tab-bar) { padding-top: 1.5rem; }
 
 /* ─── Theme Toggle ─────────────────────────────────────────────────────── */
 .theme-toggle {
@@ -1293,7 +1296,115 @@ body::after {
 }
 
 /* ─── Landing Page — Precision Navigator ───────────────────────────────── */
-.lp { max-width: 1200px; margin: 0 auto; }
+.lp { max-width: 1280px; margin: 0 auto; }
+
+/* ─── Top Nav ──────────────────────────────────────────────────────────── */
+.lp-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.lp-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lp-nav-brand {
+  font-family: 'Manrope', var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+}
+
+.lp-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+.lp-nav-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Manrope', var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.lp-nav-link:hover { color: var(--accent); }
+.lp-nav-link.active {
+  color: var(--accent);
+  position: relative;
+}
+.lp-nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* Inner pages — push tab bar below sticky nav */
+.inner-tab-bar { margin-top: 1rem; }
+
+.lp-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lp-nav-login {
+  background: none;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  font-family: 'Manrope', var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.lp-nav-login:hover { color: var(--accent); }
+
+.lp-nav-cta {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1.25rem;
+  border-radius: 9999px;
+  font-family: 'Manrope', var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 25%, transparent);
+  transition: all 0.2s;
+}
+.lp-nav-cta:hover { transform: scale(1.05); }
+
+/* Theme toggle inside nav — override fixed positioning */
+.lp-nav-theme {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+}
 
 /* Hero */
 .lp-hero {
@@ -1756,99 +1867,137 @@ body::after {
   text-align: center;
 }
 
-/* ─── Stats Bento Section ──────────────────────────────────────────────── */
-.lp-stats-section { padding: 0 1.5rem 4rem; }
+/* ─── Precision Engine Section ─────────────────────────────────────────── */
+.lp-engine-section {
+  padding: 4rem 1.5rem 5rem;
+  background: var(--bg-primary);
+}
 
-.lp-stats-grid {
+.lp-engine-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
-  max-width: 1100px;
+  grid-template-columns: 7fr 5fr;
+  gap: 3rem;
+  align-items: center;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-.lp-stats-main {
+/* Main blue card */
+.lp-engine-main {
+  position: relative;
   background: var(--accent);
   color: #fff;
-  padding: 3rem;
-  border-radius: 16px;
-  position: relative;
+  padding: 3.5rem 3rem;
+  border-radius: 48px;
   overflow: hidden;
+  box-shadow: 0 30px 60px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
-.lp-stats-eyebrow {
+.lp-engine-orb {
+  position: absolute;
+  top: -8rem;
+  right: -8rem;
+  width: 256px;
+  height: 256px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  filter: blur(60px);
+  transition: transform 1s ease;
+  pointer-events: none;
+}
+.lp-engine-main:hover .lp-engine-orb { transform: scale(1.5); }
+
+.lp-engine-eyebrow {
   font-family: 'Space Grotesk', var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.2em;
-  opacity: 0.7;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.8;
   margin-bottom: 1rem;
-  display: block;
+  position: relative;
+  z-index: 1;
 }
 
-.lp-stats-headline {
+.lp-engine-headline {
   font-family: 'Manrope', var(--font-display);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  font-weight: 800;
-  line-height: 1.3;
-  margin-bottom: 2rem;
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 1;
 }
 
-.lp-stats-numbers {
-  display: flex;
-  gap: 3rem;
+.lp-engine-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
-.lp-stat-value {
-  font-family: 'Space Grotesk', var(--font-mono);
-  font-size: 1.8rem;
-  font-weight: 700;
+.lp-engine-stat-value {
+  font-family: 'Manrope', var(--font-display);
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
   margin-bottom: 0.25rem;
 }
 
-.lp-stat-label {
-  font-size: 0.82rem;
-  opacity: 0.7;
+.lp-engine-stat-label {
+  font-family: 'Space Grotesk', var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  opacity: 0.75;
 }
 
-.lp-stats-insight {
-  background: var(--bg-card-solid);
-  border: 1px solid var(--border);
-  padding: 2.5rem;
-  border-radius: 16px;
+/* Insight card */
+.lp-engine-insight {
+  padding: 2.25rem;
+  border-radius: 32px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-primary));
+  border: 2px solid color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.lp-engine-insight-title {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.lp-insight-title {
+  align-items: center;
+  gap: 0.5rem;
   font-family: 'Manrope', var(--font-display);
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 900;
   color: var(--accent);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
+.lp-engine-insight-title .material-symbols-outlined { font-size: 22px !important; }
 
-.lp-insight-body {
+.lp-engine-insight-body {
   font-family: 'Inter', var(--font-body);
-  font-size: 0.88rem;
+  font-size: 0.92rem;
+  line-height: 1.75;
   color: var(--text-secondary);
-  line-height: 1.7;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.lp-insight-link {
+.lp-engine-insight-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   font-family: 'Manrope', var(--font-display);
-  font-weight: 700;
   font-size: 0.88rem;
+  font-weight: 900;
   color: var(--accent);
   background: none;
   border: none;
-  cursor: pointer;
   padding: 0;
-  text-align: left;
-  transition: opacity 0.2s;
+  cursor: pointer;
+  transition: gap 0.2s;
 }
-.lp-insight-link:hover { opacity: 0.7; }
+.lp-engine-insight-link:hover { gap: 0.8rem; }
+.lp-engine-insight-link .material-symbols-outlined { font-size: 18px !important; }
 
 /* ─── Inner Page Header ────────────────────────────────────────────────── */
 .inner-header { margin-bottom: 0.5rem; }
@@ -1915,11 +2064,19 @@ body::after {
 
   .lp-concept-section { padding: 2rem 1rem; }
   .lp-concept-banner { font-size: 0.85rem; padding: 0.85rem 1.25rem; }
-  .lp-stats-section { padding: 0 1rem 3rem; }
-  .lp-stats-grid { grid-template-columns: 1fr; }
-  .lp-stats-main { padding: 2rem 1.5rem; }
-  .lp-stats-numbers { gap: 1.5rem; }
-  .lp-stat-value { font-size: 1.4rem; }
-  .lp-stat-hide-mobile { display: none; }
-  .lp-stats-insight { padding: 1.5rem; }
+
+  .lp-nav-inner { padding: 0 1rem; gap: 0.5rem; height: 56px; }
+  .lp-nav-links { display: none; }
+  .lp-nav-brand { font-size: 1.2rem; }
+  .lp-nav-login { display: none; }
+  .lp-nav-cta { padding: 0.45rem 1rem; font-size: 0.75rem; }
+
+  .lp-engine-section { padding: 2.5rem 1rem 3rem; }
+  .lp-engine-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .lp-engine-main { padding: 2rem 1.5rem; border-radius: 28px; }
+  .lp-engine-headline { font-size: 1.5rem; margin-bottom: 1.5rem; }
+  .lp-engine-stats { gap: 1.25rem; }
+  .lp-engine-stat-value { font-size: 1.5rem; }
+  .lp-engine-stat-hide-sm { display: none; }
+  .lp-engine-insight { padding: 1.5rem; border-radius: 24px; }
 }
