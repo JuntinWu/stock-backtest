@@ -1278,6 +1278,35 @@ body::after {
   text-align: center;
 }
 
+.modal-ack-row {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-ack-btn {
+  background: var(--accent);
+  color: #0b1420;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.7rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.modal-ack-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .modal-ack-btn {
+  color: #ffffff;
+}
+
 /* ─── Responsive ───────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .app { padding: 1.25rem 1rem 3rem; }

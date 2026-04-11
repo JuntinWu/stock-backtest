@@ -1,19 +1,26 @@
 type DisclaimerProps = {
   open: boolean
   onClose: () => void
+  mustAcknowledge?: boolean
 }
 
-export default function Disclaimer({ open, onClose }: DisclaimerProps) {
+export default function Disclaimer({ open, onClose, mustAcknowledge = false }: DisclaimerProps) {
   if (!open) return null
 
+  const handleOverlayClick = () => {
+    if (!mustAcknowledge) onClose()
+  }
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>免責聲明與使用條款</h2>
-          <button className="modal-close" onClick={onClose} aria-label="關閉">
-            &#10005;
-          </button>
+          <h2>{mustAcknowledge ? '歡迎使用 StockPilot — 請先閱讀' : '免責聲明與使用條款'}</h2>
+          {!mustAcknowledge && (
+            <button className="modal-close" onClick={onClose} aria-label="關閉">
+              &#10005;
+            </button>
+          )}
         </div>
         <div className="modal-body">
           <section>
@@ -81,6 +88,14 @@ export default function Disclaimer({ open, onClose }: DisclaimerProps) {
           <p className="modal-footer-note">
             最後更新日期：2026-04-05 · 繼續使用本站即表示您已閱讀並同意上述所有條款。
           </p>
+
+          {mustAcknowledge && (
+            <div className="modal-ack-row">
+              <button className="modal-ack-btn" onClick={onClose}>
+                我已閱讀並同意上述條款
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ export default function LandingPage({ onNavigate }: Props) {
         </svg>
         <div className="lp-hero-inner">
           <div className="lp-pill">
-            資料來源：歷史回測數據整合 | 核心演算法啟動
+            資料來源：Yahoo Finance 歷史公開資料 | 僅供研究參考
           </div>
           <h1 className="lp-title">
             StockPilot <span className="lp-title-gradient">投資策略全解析</span>
@@ -40,7 +40,8 @@ export default function LandingPage({ onNavigate }: Props) {
             <h2 className="lp-mag-title">我該什麼時候買？</h2>
             <div className="lp-mag-divider" />
             <p className="lp-mag-body">
-              數據化投資的第一步在於時機。透過回測四策略，我們解構市場循環與進場點的數學邏輯，讓投資不再是猜測，而是機率。
+              用歷史資料回答一個常被討論的問題：不同進場時機下，長期績效差距有多大？
+              工具會以 XIRR 計算四種策略的年化報酬率，讓您從數據中形成自己的觀察。
             </p>
             <div className="lp-mag-insight">
               <span className="material-symbols-outlined">south</span>
@@ -129,7 +130,8 @@ export default function LandingPage({ onNavigate }: Props) {
             <h2 className="lp-mag-title">現在算貴還便宜？</h2>
             <div className="lp-mag-divider" />
             <p className="lp-mag-body">
-              利用統計學中的均值回歸理論，我們將市場情緒量化為「樂活五線譜」。一眼看穿目前的價格溢價程度，掌握最有利的配置空間。
+              基於統計學的均值回歸假設，對歷史對數價格做線性迴歸並畫出 ±1、±2 個標準差的參考線，
+              呈現目前價格相對長期趨勢的位置。僅為歷史統計視覺化，不代表未來走勢。
             </p>
             <div className="lp-mag-insight">
               <span className="material-symbols-outlined">south</span>
@@ -146,7 +148,8 @@ export default function LandingPage({ onNavigate }: Props) {
             <h2 className="lp-mag-title">退休現金流怎麼造？</h2>
             <div className="lp-mag-divider" />
             <p className="lp-mag-body">
-              穩定的被動收入是投資的終極堡壘。透過「樂退月月配」組合，我們精算出最佳化配息週期，確保資源如流水般精準灌溉您的退休藍圖。
+              以您自行輸入的 ETF 股價、配息資料為基礎，試算不同本金與配置策略下的月現金流分佈，
+              幫助您理解「配息組合」背後的數學結構。計算結果不構成推薦或保證。
             </p>
             <div className="lp-mag-insight">
               <span className="material-symbols-outlined">south</span>
@@ -200,40 +203,42 @@ export default function LandingPage({ onNavigate }: Props) {
         </div>
       </section>
 
-      {/* ─── Precision Engine Stats ───────────────────────────────────── */}
+      {/* ─── Data & Methodology ───────────────────────────────────────── */}
       <section className="lp-engine-section">
         <div className="lp-engine-grid">
           <div className="lp-engine-main">
             <div className="lp-engine-orb" />
-            <h4 className="lp-engine-eyebrow">PRECISION ENGINE</h4>
+            <h4 className="lp-engine-eyebrow">DATA & METHODOLOGY</h4>
             <h2 className="lp-engine-headline">
-              掌握全市場 20+ 年<br />深度回測引擎
+              基於公開歷史資料<br />透明、可驗證的計算
             </h2>
             <div className="lp-engine-stats">
               <div className="lp-engine-stat">
-                <div className="lp-engine-stat-value">99.8%</div>
-                <div className="lp-engine-stat-label">ACCURACY</div>
+                <div className="lp-engine-stat-value">20+ yr</div>
+                <div className="lp-engine-stat-label">HISTORY</div>
               </div>
               <div className="lp-engine-stat">
-                <div className="lp-engine-stat-value">5,000+</div>
-                <div className="lp-engine-stat-label">PORTFOLIOS</div>
+                <div className="lp-engine-stat-value">XIRR</div>
+                <div className="lp-engine-stat-label">METHOD</div>
               </div>
               <div className="lp-engine-stat lp-engine-stat-hide-sm">
-                <div className="lp-engine-stat-value">15ms</div>
-                <div className="lp-engine-stat-label">REALTIME</div>
+                <div className="lp-engine-stat-value">OSS</div>
+                <div className="lp-engine-stat-label">OPEN SOURCE</div>
               </div>
             </div>
           </div>
           <div className="lp-engine-insight">
             <h4 className="lp-engine-insight-title">
-              <span className="material-symbols-outlined">insights</span>
-              今日市場觀察
+              <span className="material-symbols-outlined">info</span>
+              關於本工具
             </h4>
             <p className="lp-engine-insight-body">
-              目前的市場五線譜顯示大部分藍籌股處於「均值」區間，定期定額（DCA）仍然是當前波動環境下的最佳策略。
+              StockPilot 為<strong>教育與研究用途</strong>的開放工具，所有計算邏輯透明可查，
+              資料來源為 Yahoo Finance 歷史收盤價。本站不提供個股推薦、不預測市場走勢、
+              不保證任何報酬。使用前請詳閱免責聲明。
             </p>
-            <button className="lp-engine-insight-link" onClick={() => onNavigate('lohas')}>
-              查看完整分析
+            <button className="lp-engine-insight-link" onClick={() => onNavigate('backtest')}>
+              開始使用工具
               <span className="material-symbols-outlined">arrow_forward</span>
             </button>
           </div>

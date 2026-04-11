@@ -79,16 +79,18 @@ function ETFIntro() {
       padding: '1.5rem', marginTop: '1.5rem', marginBottom: '1.5rem', boxShadow: 'var(--shadow-card)',
     }}>
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        {'\u{1F3AF}'} 什麼是「樂退月月配」？
+        {'\u{1F3AF}'} 什麼是「樂退月月配」試算？
       </h3>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '0.75rem' }}>
-        透過同時持有 <strong style={{ color: 'var(--text-primary)' }}>0056、00878、00919</strong> 三支高股息 ETF，
-        利用它們<strong style={{ color: 'var(--text-primary)' }}>配息月份互補</strong>的特性（分別在 1/4/7/10、2/5/8/11、3/6/9/12 月配息），
-        達到<strong style={{ color: 'var(--accent)' }}>月月都有現金流入</strong>的效果。
+        這是一個<strong style={{ color: 'var(--text-primary)' }}>純數學試算工具</strong>，協助您理解
+        「配息月份互補」的概念 — 當同時持有多支配息月份不同的 ETF 時，各月分配到的配息如何堆疊。
+        下方預設的 0056、00878、00919 僅為<strong style={{ color: 'var(--text-primary)' }}>範例資料</strong>，
+        股價與配息數字<strong style={{ color: 'var(--text-primary)' }}>可完全自行修改</strong>，工具本身不推薦任何特定標的。
       </p>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '0.75rem' }}>
-        輸入你的<strong style={{ color: 'var(--text-primary)' }}>目標月被動收入</strong>，本工具會自動計算不同本金下的配息金額，
-        幫你回答：「要達到每月 N 萬被動收入，到底需要多少本金？」
+        輸入<strong style={{ color: 'var(--text-primary)' }}>目標月現金流</strong>，工具會根據您輸入的參數，
+        計算不同本金下的預估配息金額。所有結果僅為基於輸入資料的<strong style={{ color: 'var(--accent)' }}>假設性試算</strong>，
+        實際配息金額將受除息日、填息情況、基金公司配息政策變動等諸多因素影響。
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
         {DEFAULT_ETFS.map((etf) => (
@@ -321,25 +323,26 @@ function InsightBox({ result }: { result: ETFCalculationResult }) {
         {best ? (
           <li style={{ padding: '0.15rem 0' }}>
             <span style={{ color: 'var(--amber)', fontWeight: 700, fontFamily: 'var(--font-mono)', marginRight: '0.5rem' }}>&gt;</span>
-            要達到每月 <strong>{formatWan(result.targetMonthly)}</strong> 被動收入，最低需要 <strong>{formatWan(best.capital)}</strong> 本金
-            （月配息 ${formatNum(Math.round(best.totalMonthlyDividend))}）
+            依本次輸入參數試算：每月 <strong>{formatWan(result.targetMonthly)}</strong> 的目標現金流，
+            於本試算範圍內最低對應本金為 <strong>{formatWan(best.capital)}</strong>
+            （試算月配息 ${formatNum(Math.round(best.totalMonthlyDividend))}）
           </li>
         ) : (
           <li style={{ padding: '0.15rem 0' }}>
             <span style={{ color: 'var(--amber)', fontWeight: 700, fontFamily: 'var(--font-mono)', marginRight: '0.5rem' }}>&gt;</span>
-            在目前試算範圍內尚無法達標，建議提高本金或選擇更高殖利率標的
+            在目前試算範圍內尚未達標，您可自行調整本金範圍或修改標的參數再次試算
           </li>
         )}
         {four && (
           <li style={{ padding: '0.15rem 0' }}>
             <span style={{ color: 'var(--amber)', fontWeight: 700, fontFamily: 'var(--font-mono)', marginRight: '0.5rem' }}>&gt;</span>
-            400 萬方案：月配息 ${formatNum(Math.round(four.totalMonthlyDividend))}，
-            {four.achieveTarget ? '可達標 \u2713' : `距離目標還差 $${formatNum(Math.round(result.targetMonthly - four.totalMonthlyDividend))}/月`}
+            400 萬方案試算：月配息 ${formatNum(Math.round(four.totalMonthlyDividend))}，
+            {four.achieveTarget ? '達到目標 \u2713' : `距離目標約差 $${formatNum(Math.round(result.targetMonthly - four.totalMonthlyDividend))}/月`}
           </li>
         )}
         <li style={{ padding: '0.15rem 0' }}>
           <span style={{ color: 'var(--amber)', fontWeight: 700, fontFamily: 'var(--font-mono)', marginRight: '0.5rem' }}>&gt;</span>
-          三支 ETF 配息月份互補，可達成月月有現金流入
+          以上為基於您輸入資料的假設性試算，不構成投資建議，實際配息可能與試算結果不同
         </li>
       </ul>
     </div>
