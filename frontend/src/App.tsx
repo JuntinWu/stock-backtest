@@ -9,6 +9,9 @@ import LandingPage from './components/LandingPage'
 import Nav from './components/Nav'
 import AdSlot from './components/AdSlot'
 import Disclaimer from './components/Disclaimer'
+import PrivacyPolicy from './components/PrivacyPolicy'
+
+const TERMS_ACK_KEY = 'stockpilot_terms_accepted_v1'
 
 type Tab = 'backtest' | 'lohas'  | 'etf'
 type View = 'landing' | Tab
@@ -84,7 +87,34 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BacktestResponse | null>(null)
   const [disclaimerOpen, setDisclaimerOpen] = useState(false)
+  const [privacyOpen, setPrivacyOpen] = useState(false)
+  const [forceAcknowledge, setForceAcknowledge] = useState(false)
   const { theme, toggle: toggleTheme } = useTheme()
+
+  // First-visit: force disclaimer acknowledgment
+  useEffect(() => {
+    try {
+      const accepted = localStorage.getItem(TERMS_ACK_KEY)
+      if (!accepted) {
+        setForceAcknowledge(true)
+        setDisclaimerOpen(true)
+      }
+    } catch {
+      // localStorage unavailable (SSR/privacy mode): skip enforcement
+    }
+  }, [])
+
+  const handleDisclaimerClose = () => {
+    if (forceAcknowledge) {
+      try {
+        localStorage.setItem(TERMS_ACK_KEY, new Date().toISOString())
+      } catch {
+        // ignore
+      }
+      setForceAcknowledge(false)
+    }
+    setDisclaimerOpen(false)
+  }
 
   const isLanding = view === 'landing'
   const tab = isLanding ? null : view
@@ -254,14 +284,23 @@ export default function App() {
             免責聲明
           </button>
           <span className="footer-sep">·</span>
+          <button className="footer-link" onClick={() => setPrivacyOpen(true)}>
+            隱私權政策
+          </button>
+          <span className="footer-sep">·</span>
           <a className="footer-link" href="mailto:contact@stockpilot.example">聯絡我們</a>
         </div>
         <div className="footer-copy">
-          &#169; 2026 StockPilot — 真實數據驅動的投資分析工具 · 本站內容僅供參考，不構成投資建議
+          &#169; 2026 StockPilot — 教育與研究用途的歷史資料分析工具 · 本站內容僅供參考，不構成投資建議
         </div>
       </footer>
 
-      <Disclaimer open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} />
+      <Disclaimer
+        open={disclaimerOpen}
+        onClose={handleDisclaimerClose}
+        mustAcknowledge={forceAcknowledge}
+      />
+      <PrivacyPolicy open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
     </div>
     </>
   )
